@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MarchantController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -52,3 +53,14 @@ Route::post('/settings/products', 'ProductController@store')->name('products.sto
 // Route for Quickbook Callback
 
 Route::get('/quickbook/{user}/callback', 'QuickbookController@callback')->name('qb.callback');
+
+//Rote for Marchant
+
+
+Route::get('/marchants', [MarchantController::class, 'index'])->name('marchants.index');
+Route::get('/marchants/create', [MarchantController::class, 'create'])->name('marchants.create');
+Route::post('/marchants', [MarchantController::class, 'store'])->name('marchants.store');
+Route::get('/marchants/edit/{id}', [MarchantController::class, 'edit'])->name('marchants.edit');
+Route::put('/marchants/update/{id}', [MarchantController::class, 'update'])->name('marchants.update');
+Route::delete('/marchants/destroy/{id}', [MarchantController::class, 'destroy'])->name('marchants.destroy');
+
