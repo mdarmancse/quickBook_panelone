@@ -4,14 +4,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Marchant;
+use App\User;
 
 class MarchantController extends Controller
 {
     public function index()
     {
         $data = [];
-        $marchants = Marchant::all();
+        $marchants = User::all();
         $data['menu'] = "marchant";
         $data['menu_sub'] = "";
         $data['marchants'] = $marchants;
@@ -30,12 +30,12 @@ class MarchantController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:marchants',
+            'email' => 'required|email|unique:users',
             'password' => 'required|min:6|confirmed',
         ]);
 
         try {
-            Marchant::create([
+            User::create([
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => bcrypt($request->password), // Hash the password
@@ -43,13 +43,14 @@ class MarchantController extends Controller
 
             return redirect()->route('marchants.index')->with('success', 'Marchant created successfully');
         } catch (\Exception $e) {
+
             return redirect()->back()->withInput()->withErrors(['error' => 'Something went wrong. Please try again.']);
         }
     }
 
     public function edit($id)
     {
-        $marchant = Marchant::findOrFail($id);
+        $marchant = User::findOrFail($id);
         $data['menu'] = "marchant";
         $data['menu_sub'] = "";
         $data['marchant'] = $marchant;
@@ -62,13 +63,13 @@ class MarchantController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:marchants,email,' . $id,
+            'email' => 'required|email|unique:users,email,' . $id,
             'password' => 'required|min:6|confirmed',
         ]);
 
 
         try {
-            $merchant = Marchant::findOrFail($id);
+            $merchant = User::findOrFail($id);
             $merchant->update($request->all());
             return redirect()->route('marchants.index')->with('success', 'Marchant updated successfully');
         } catch (\Exception $e) {
@@ -80,7 +81,7 @@ class MarchantController extends Controller
 
     public function destroy($id)
     {
-        $merchant = Marchant::findOrFail($id);
+        $merchant = User::findOrFail($id);
         $merchant->delete();
 
         return redirect()->route('marchants.index')->with('success', 'Marchant deleted successfully');
