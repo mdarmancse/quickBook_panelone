@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Product;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use QuickBooksOnline\API\DataService\DataService;
 use QuickBooksOnline\API\Exception\SdkException;
 use QuickBooksOnline\API\Exception\ServiceException;
@@ -46,5 +48,41 @@ class QuickbookController extends Controller
 
         return redirect()->route('settings.edit', ['id' => $setting->id]);
 
+    }
+
+    public function syncItems()
+    {
+
+        // Replace these values with your actual QuickBooks credentials
+        $realmId = '9130357849536636';
+        $clientId = 'AB5kFbletRbjWcZWUqor6CHxtY730MlAZ9nEcuFNtmjfNwOdtU';
+        $clientSecret = 'oW2mxLmn6WgFxQOzKDn9xrSGV4j8i0RkKo6gaAYW';
+
+
+        $accessToken = $this->getAccessToken($clientId, $clientSecret, $realmId);
+        dd($accessToken);
+        exit();
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $accessToken,
+            'Accept' => 'application/json',
+        ])->get("https://quickbooks.api.url/v3/company/{$realmId}/item");
+
+        $items = $response->json()['QueryResponse']['Item'] ?? [];
+
+
+
+        foreach ($items as $item) {
+            Product::updateOrCreate(
+                ['id' => $item['Id']], // Assuming QuickBooks provides an ID for items
+                [
+                    'name' => $item['Name'],
+                    'description' => $item['Description'],
+                    // Add other fields based on QuickBooks item attributes you want to store
+                ]
+            );
+        }
+
+        return response()->json(['message' => 'Items synchronized successfully']);
     }
 }

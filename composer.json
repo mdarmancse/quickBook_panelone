@@ -17,7 +17,8 @@
         "laravel/ui": "^2.4",
         "quickbooks/v3-php-sdk": "^5.4",
         "realrashid/sweet-alert": "^3.2",
-        "twilio/sdk": "^6.15"
+        "twilio/sdk": "^6.15",
+      "ext-json": "*"
     },
     "require-dev": {
         "facade/ignition": "^2.0",

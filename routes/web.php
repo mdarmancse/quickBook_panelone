@@ -48,6 +48,7 @@ Route::get('/settings/products', 'ProductController@index')->name('products.inde
 Route::get('/settings/products/create/{id}', 'ProductController@create')->name('products.create');
 Route::get('/settings/products/destroy/{id}', 'ProductController@destroy')->name('products.destroy');
 Route::post('/settings/products', 'ProductController@store')->name('products.store');
+Route::get('/settings/syncItems', 'ProductController@syncItems');
 
 
 // Route for Quickbook Callback

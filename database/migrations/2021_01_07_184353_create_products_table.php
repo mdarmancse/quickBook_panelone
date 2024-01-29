@@ -14,15 +14,24 @@ class CreateProductsTable extends Migration
     public function up()
     {
         Schema::create('products', function (Blueprint $table) {
-            $table->id();
-            $table->string('product_qb_id');
-            $table->foreignId('user_id');
-            $table->string('name')->nullable();
-            $table->text('description')->nullable();
-            $table->string('type')->default('Debit');
-            $table->string('coa');
+            $table->id()->autoIncrement();
+            $table->string('ItemId')->unique();
+            $table->string('Name');
+            $table->text('Description')->nullable();
+            $table->boolean('Active');
+            $table->string('FullyQualifiedName');
+            $table->boolean('Taxable');
+            $table->decimal('UnitPrice', 10, 2);
+            $table->string('Type');
+            $table->json('IncomeAccountRef');
+            $table->decimal('PurchaseCost', 10, 2);
+            $table->boolean('TrackQtyOnHand');
+            $table->string('domain');
+            $table->boolean('sparse');
+            $table->integer('SyncToken');
             $table->timestamps();
         });
+
     }
 
     /**
