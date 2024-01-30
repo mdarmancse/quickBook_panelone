@@ -11,6 +11,7 @@
             </li>
         </ul>
 
+
         <!-- Right navbar links -->
         <ul class="navbar-nav ml-auto">
             <li class="nav-item dropdown">
@@ -86,6 +87,7 @@
                     </ul>
                 </li>
 
+                <?php if(Auth::user()->id == 1): ?>
                 <!-- Marchant Section -->
                 <li class="nav-item has-treeview">
                     <a href="#" class="nav-link">
@@ -110,6 +112,7 @@
                         </li>
                     </ul>
                 </li>
+                <?php endif; ?>
             </ul>
         </nav>
         <!-- /.sidebar-menu -->

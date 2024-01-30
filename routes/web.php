@@ -32,7 +32,7 @@ Route::get('/change/password', 'ChangePasswordController@index')->middleware('au
 Route::post('/change/password/store', 'ChangePasswordController@store')->middleware('auth')->name('change.password.store');
 
 Route::get('/settings', 'SettingsController@index')->middleware('auth')->name('settings');
-Route::get('/settings/edit/{id}', 'SettingsController@edit')->middleware('auth')->name('settings.edit');
+Route::get('/settings/edit/{id?}', 'SettingsController@edit')->middleware('auth')->name('settings.edit');
 Route::post('/settings/store/{settings}', 'SettingsController@store')->middleware('auth')->name('settings.store');
 Route::get('/home', 'HomeController@index')->middleware('auth')->name('home');
 Route::get('/dashboard', 'DashboardController@index')->middleware('auth')->name('dashboard');
@@ -45,7 +45,7 @@ Route::post('/journal/store', 'CustomerController@store')->middleware('auth')->n
 
 // Products of QB
 Route::get('/settings/products', 'ProductController@index')->name('products.index');
-Route::get('/settings/products/create/{id}', 'ProductController@create')->name('products.create');
+Route::get('/settings/products/create/{id?}', 'ProductController@create')->name('products.create');
 Route::get('/settings/products/destroy/{id}', 'ProductController@destroy')->name('products.destroy');
 Route::post('/settings/products', 'ProductController@store')->name('products.store');
 Route::get('/settings/syncItems', 'ProductController@syncItems');

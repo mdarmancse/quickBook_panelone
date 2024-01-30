@@ -40,7 +40,7 @@ class CustomerController extends Controller
         $dataService = $this->QuickbooksDataService();
         $companyInfo = $dataService->getCompanyInfo();
 
-        dd($companyInfo);
+
 
         $data = [];
         $data['menu'] = "customer";

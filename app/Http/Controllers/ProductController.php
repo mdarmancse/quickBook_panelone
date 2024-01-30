@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Product;
 use App\QBDataService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
 class ProductController extends Controller
@@ -17,16 +18,28 @@ class ProductController extends Controller
     public function index()
     {
 
-        $dataService = QBDataService::init();
+        /*
+      $dataService = QBDataService::init();
         $data = [];
         $data['menu'] = "settings";
         $data['menu_sub'] = "";
-        $data['products'] = auth()->user()->products;
+       $data['products'] = auth()->user()->products;
         try {
             $data['qb_products'] = $dataService->Query("SELECT * FROM item");
         } catch (\Exception $e) {
             $data['qb_products'] = [];
         }
+        */
+        $user_id = Auth::user()->id;
+
+        $data = [];
+        $products = Product::where('createdby',$user_id)->get();
+        $data['menu'] = "settings";
+        $data['menu_sub'] = "";
+        $data['qb_products'] = $products;
+
+
+
         return view('products.index', $data);
     }
 
@@ -35,15 +48,15 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create($id)
+    public function create($id= null)
     {
         // form
         $data = [];
         $data['menu'] = "settings";
         $data['menu_sub'] = "";
-        $dataService = QBDataService::init();
-        $data['product'] = $dataService->FindById('item', $id);
-        $data['coas'] = $dataService->Query("SELECT * FROM Account");
+//        $dataService = QBDataService::init();
+//        $data['product'] = $dataService->FindById('item', $id);
+//        $data['coas'] = $dataService->Query("SELECT * FROM Account");
         return view('products.create', $data);
     }
 
@@ -55,12 +68,69 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        $user = auth()->user();
-        $user->products()->create($request->all());
-        toast('Product Associated successful!', 'success');
-        return redirect()->route('products.index');
-    }
 
+        $productArray = [
+            'Name' => $request->input('name'),
+            'ItemId' => rand(1,1000),
+            'Description' => $request->input('description'),
+            'Type' => $request->input('type'),
+            'UnitPrice' => $request->input('unit_price'),
+            'Active' => true,
+            'TrackQtyOnHand' => true,
+            'createdby' => 2,
+            'updatedby' => 2,
+            // Add other fields based on your local database schema
+        ];
+
+        $product = Product::create($productArray);
+
+        $data = [
+            'Name' => $request->input('name'),
+            'Description' => $request->input('description'),
+            'UnitPrice' => $request->input('unit_price'),
+            'IncomeAccountRef' => [
+                'name' => 'Sales of Product Income',
+                'value' => '79',
+            ],
+            'AssetAccountRef' => [
+                'name' => 'Inventory Asset',
+                'value' => '81',
+            ],
+            'Type' =>  $request->input('type'),
+            'ExpenseAccountRef' => [
+                'name' => 'Cost of Goods Sold',
+                'value' => '80',
+            ],
+       ];
+
+
+
+
+        $quickbooksResponse = $this->createQuickBooksItem($data);
+        dd($quickbooksResponse);
+        if ($quickbooksResponse->successful()) {
+
+            $quickbooksItemId = $quickbooksResponse->json()['Item']['Id'];
+
+            $product->update(['quickbooks_id' => $quickbooksItemId]);
+
+            return redirect()->route('products.index')->with('success', 'Product created successfully');
+        }
+
+    }
+    private function createQuickBooksItem(array $data)
+    {
+
+        $accessToken = 'eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..fINrXgR1GfEvceGaGREfwQ.-iBu8QhNB9aEuAs-J5FQ445-1JqGNHYlMz_qmdPfaBS0Q1xa77CpdvpGuyLW5GAGgCk1_mFB7GKkhHqGcUs_w9UD3dOYj0VjfOWUu5mfhcmAHLFFbMZ6hkWNrk4BqiN0Cr0kKWaH9T4jOCpvIJeEIrLaXnOZxZ25XauL-DwnNIWz8VOMm3ofx1RNLogtOMySC1iA3x3yuWyp3YAwTgDAG2IaFRm5iVo2fuVpbya5VvRrp8WUE2zkYN-C0eBNdmhsnC3O1Ha98cmtP5Jgb-YS8InZ2Z5nLrveC_zMhCA7FGVjcIUyMtPGvZwjV5JlbQ1N2SatkyhTGswaC6bdGFoDwqCp_Czwc6mVqhDM2a63HSauMZGEX5yi-uaRc8o-Acq4LhoEVEKd_OA5qtbimtvCR-zbWd4NBkb4cIzzqCng5wGcCYN6GIiVmyy3S0bvIEWIPwHl1psA7Kqh7zc35_nGHBvRE9ZdrbLPvCGyF88oqzPjPwRiE62j0pRgZ1oFWaSE3-1bGnr4jIxs9_Bxml0EX6LLN_h0goOMYkdKb_ThAfP5-1MuTETP-y3UCQRN-vnWF7Eb0rnDrlMDLj9Z4mxasRkAiRrv8bT2iEEzPRrWW-gBtJdmScLrhkFCdIBSV1EE-OAhBLuJt3gLgVPS6sNTMRJZfMJp5sz2D7mgpalHCVzk6-ED4k59YFIG56kc78HWGGqZG7b0yl-jAtFkyvawNWWbqDFFcgHp9aESrwLkSA3ZFiAzHxJboxRuUrC8O4Px.B1WqNszs6puiDBNcd_ovUQ';
+        $realmId = '9130357849536636';
+
+        $sandboxApiUrl = "https://sandbox-quickbooks.api.intuit.com/v3/company/{$realmId}/item?minorversion=70";
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $accessToken,
+            'Accept' => 'application/json',
+        ])->post($sandboxApiUrl,$data);
+        return $response;
+    }
     /**
      * Display the specified resource.
      *

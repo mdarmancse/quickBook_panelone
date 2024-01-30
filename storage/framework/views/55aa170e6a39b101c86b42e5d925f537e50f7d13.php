@@ -25,40 +25,48 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-12">
+              <div class="container">
+                  <div class="row justify-content-center">
+                      <div class="col-md-6">
+                          <div class="card">
+                              <div class="card-header">
+                                  <h3 class="card-title">Settings</h3>
+                              </div>
+                              <!-- /.card-header -->
+                              <div class="card-body">
+                                  <?php if($settings): ?>
+                                      <p><strong>Sandbox/Production:</strong> <?php echo e($settings['baseUrl']); ?></p>
+                                      <p><strong>Secret Id:</strong> <?php echo e($settings['ClientID']); ?></p>
+                                      <p><strong>Token:</strong> <?php echo e($settings['ClientSecret']); ?></p>
+                                      <p><strong>Redirect URL:</strong> <?php echo e($settings['RedirectURI']); ?></p>
+                                      <p><strong>Others:</strong> <?php echo e($settings['others']); ?></p>
+                                      <div class="text-center mt-4">
+                                          <a href="<?php echo e($qbauth); ?>" class="btn btn-info" target="_blank">Authenticate Quickbook</a>
+                                          <?php if(isset($settings['id'])): ?>
+                                              <a href="<?php echo e(route('settings.edit',['id' => $settings['id'] ])); ?>" class="btn btn-success ml-2">Edit</a>
+                                          <?php endif; ?>
+                                      </div>
+                                  <?php else: ?>
 
-            <div class="card">
-              <div class="card-header">
-                <h3 class="card-title">Settings</h3>
+
+                                      <div class="text-center mt-4">
+                                          <p>No settings data available.</p>
+                                          <a href="<?php echo e($qbauth); ?>" class="btn btn-info" target="_blank">Authenticate Quickbook</a>
+                                          <a href="<?php echo e(route('settings.edit')); ?>" class="btn btn-success ml-2">Add</a>
+
+
+                                      </div>
+
+                                  <?php endif; ?>
+                              </div>
+                              <!-- /.card-body -->
+                          </div>
+                      </div>
+                  </div>
               </div>
-              <!-- /.card-header -->
-              <div class="card-body">
-                  <a href="<?php echo e($qbauth); ?>" class="btn btn-info">Authenticate Quickbook</a>
-                <table id="example1" class="table table-bordered table-striped">
-                  <thead>
-                  <tr>
-                    <th>Sandbox/Production</th>
-                    <th>Secret Id</th>
-                    <th>Token</th>
-                    <th>redirect url: </th>
-                    <th>Others</th>
-                    <th>Action</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <tr>
-                    <td><?php echo e($settings['baseUrl']); ?></td>
-                    <td><?php echo e($settings['ClientID']); ?></td>
-                    <td><?php echo e($settings['ClientSecret']); ?></td>
-                    <td><?php echo e($settings['RedirectURI']); ?></td>
-                    <td><?php echo e($settings['others']); ?></td>
-                    <td><a href="<?php echo e(route('settings.edit',['id' => $settings['id'] ])); ?>" class="btn btn-success">Edit</a></td>
-                  </tr>
-                  </tbody>
-                </table>
-              </div>
-              <!-- /.card-body -->
-            </div>
-            <!-- /.card -->
+
+
+              <!-- /.card -->
           </div>
           <!-- /.col -->
         </div>

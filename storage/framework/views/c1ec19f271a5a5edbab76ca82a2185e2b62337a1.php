@@ -1,6 +1,6 @@
-@extends('layouts.master')
 
-@section('content')
+
+<?php $__env->startSection('content'); ?>
 
     <!-- Content Header (Page header) -->
     <div class="content-header">
@@ -11,7 +11,7 @@
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{route('home')}}">Home</a></li>
+                        <li class="breadcrumb-item"><a href="<?php echo e(route('home')); ?>">Home</a></li>
                         <li class="breadcrumb-item active">Dashboard</li>
                     </ol>
                 </div><!-- /.col -->
@@ -30,9 +30,9 @@
                             <h3 class="card-title">Create Product</h3>
                         </div>
 
-                        <form class="card-body" style="margin: 10px" action="{{ route('products.store') }}" enctype="multipart/form-data" method="POST">
-                            @csrf
-                            @include('qb-flash-message')
+                        <form class="card-body" style="margin: 10px" action="<?php echo e(route('products.store')); ?>" enctype="multipart/form-data" method="POST">
+                            <?php echo csrf_field(); ?>
+                            <?php echo $__env->make('qb-flash-message', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
                             <div class="form-group row">
                                 <label for="name" class="col-sm-3 col-form-label">Item Name</label>
@@ -94,4 +94,6 @@
 
     <!-- /.content -->
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\git\quickBook_panelone\resources\views/products/create.blade.php ENDPATH**/ ?>

@@ -1,6 +1,6 @@
-@extends('layouts.master')
 
-@section('content')
+
+<?php $__env->startSection('content'); ?>
 
     <!-- Content Header (Page header) -->
     <div class="content-header">
@@ -11,7 +11,7 @@
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="{{route('home')}}">Home</a></li>
+              <li class="breadcrumb-item"><a href="<?php echo e(route('home')); ?>">Home</a></li>
               <li class="breadcrumb-item active">Dashboard</li>
             </ol>
           </div><!-- /.col -->
@@ -37,9 +37,9 @@
                     <div class="col-sm-5">
                       <select class="form-control" id="products" name="products">
                           <option value="">Select..</option>
-                          @foreach($qb_products as $product)
-                          <option value="{{$product->Id}}">{{$product->FullyQualifiedName}}</option>
-                          @endforeach
+                          <?php $__currentLoopData = $qb_products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                          <option value="<?php echo e($product->Id); ?>"><?php echo e($product->FullyQualifiedName); ?></option>
+                          <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                       </select>
                     </div>
                     <a href="/settings/products/create/" id="createUrl" class="btn btn-info">Associate new product</a>
@@ -59,16 +59,16 @@
                   </tr>
                   </thead>
                   <tbody>
-                  @foreach($qb_products as $product)
+                  <?php $__currentLoopData = $qb_products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
 
                   <tr>
-                    <td width="50%">{{$product->Name}}</td>
-                    <td width="30%">{{$product->Description}}</td>
+                    <td width="50%"><?php echo e($product->Name); ?></td>
+                    <td width="30%"><?php echo e($product->Description); ?></td>
                     <!--<td><a href="#" class="btn btn-success">Edit</a> | <a href="#" class="btn btn-danger">Delete</a></td>-->
-                    <td><a href="{{route('products.destroy',['id'=> $product->id])}}" class="btn btn-danger">Delete</a></td>
+                    <td><a href="<?php echo e(route('products.destroy',['id'=> $product->id])); ?>" class="btn btn-danger">Delete</a></td>
                   </tr>
 
-                  @endforeach
+                  <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                   </tbody>
                   <tfoot>
 
@@ -106,4 +106,6 @@
 
 
     </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\git\quickBook_panelone\resources\views/products/index.blade.php ENDPATH**/ ?>
