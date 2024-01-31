@@ -13,6 +13,10 @@
         <link rel="stylesheet" href="<?php echo e(asset('admin/plugins/icheck-bootstrap/icheck-bootstrap.min.css')); ?>">
         <!-- Theme style -->
         <link rel="stylesheet" href="<?php echo e(asset('admin/dist/css/adminlte.min.css')); ?>">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.1/dist/css/select2.min.css">
+
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
     </head>
     <body class="hold-transition login-page">
         <div class="login-box">
@@ -101,7 +105,7 @@ unset($__errorArgs, $__bag); ?>
                                     </label>
                                 </div>
                             </div>-->
-                                                
+
                             <!-- /.col -->
                             <div class="col-6">
                                 <a href="<?php echo e(Route('register')); ?>" class="btn btn-default btn-block">Register</a>
@@ -125,14 +129,15 @@ unset($__errorArgs, $__bag); ?>
                                     </a>
                                 <?php endif; ?>
                     </p>
-                    
+
                 </div>
                 <!-- /.card-body -->
             </div>
             <!-- /.card -->
         </div>
         <!-- /.login-box -->
-
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         <!-- jQuery -->
         <script src="<?php echo e(asset('admin/plugins/jquery/jquery.min.js')); ?>"></script>
         <!-- Bootstrap 4 -->

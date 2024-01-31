@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\MarchantController;
+use App\Http\Controllers\PaymentRequestController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -46,8 +48,13 @@ Route::post('/journal/store', 'CustomerController@store')->middleware('auth')->n
 // Products of QB
 Route::get('/settings/products', 'ProductController@index')->name('products.index');
 Route::get('/settings/products/create/{id?}', 'ProductController@create')->name('products.create');
+Route::get('/settings/products/edit/{id}', 'ProductController@edit')->name('products.edit');
+Route::put('/settings/products/update/{id}', 'ProductController@update')->name('products.update');
+Route::get('/products/autocomplete', [ProductController::class, 'autocomplete'])->name('products.autocomplete');
+
 Route::get('/settings/products/destroy/{id}', 'ProductController@destroy')->name('products.destroy');
 Route::post('/settings/products', 'ProductController@store')->name('products.store');
+
 Route::get('/settings/syncItems', 'ProductController@syncItems');
 
 
@@ -65,3 +72,6 @@ Route::get('/marchants/edit/{id}', [MarchantController::class, 'edit'])->name('m
 Route::put('/marchants/update/{id}', [MarchantController::class, 'update'])->name('marchants.update');
 Route::delete('/marchants/destroy/{id}', [MarchantController::class, 'destroy'])->name('marchants.destroy');
 
+//Route For payemnt Request
+Route::get('/payment-requests', [PaymentRequestController::class, 'index'])->name('payment-requests.index');
+Route::post('/payment-requests', [PaymentRequestController::class, 'store'])->name('payment-requests.store');

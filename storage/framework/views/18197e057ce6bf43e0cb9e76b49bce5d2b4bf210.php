@@ -69,9 +69,13 @@
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
 <script src="<?php echo e(asset('admin/dist/js/pages/dashboard.js')); ?>"></script>
 
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/js/standalone/selectize.min.js"></script>
 <!-- bs-custom-file-input -->
 <script src="<?php echo e(asset('admin/plugins/bs-custom-file-input/bs-custom-file-input.min.js')); ?>"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.1/dist/js/select2.min.js"></script>
+
 
 <!-- date-range-picker -->
 <!--<script src="<?php echo e(asset('admin/plugins/daterangepicker/daterangepicker.js')); ?>"></script>-->
@@ -117,4 +121,5 @@ $(function(){
 var removeLink = ' <a class="remove" href="#" onclick="$(this).parent().slideUp(function(){ $(this).remove() }); return false">X</a>';
 $('a.add').relCopy({ append: removeLink});
 });
-</script><?php /**PATH C:\laragon\www\git\quickBook_panelone\resources\views/layouts/footer.blade.php ENDPATH**/ ?>
+</script>
+<?php /**PATH C:\laragon\www\git\quickBook_panelone\resources\views/layouts/footer.blade.php ENDPATH**/ ?>

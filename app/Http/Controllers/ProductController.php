@@ -45,11 +45,7 @@ class ProductController extends Controller
         return view('products.index', $data);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function create($id= null)
     {
         // form
@@ -91,6 +87,8 @@ class ProductController extends Controller
             ];
 
             $quickbooksResponse = $this->createQuickBooksItem($data);
+
+
 
             if ($quickbooksResponse->successful()) {
                 $quickbooksItem = $quickbooksResponse->json()['Item'];
@@ -148,12 +146,22 @@ class ProductController extends Controller
         ])->post($sandboxApiUrl,$data);
         return $response;
     }
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Product  $product
-     * @return \Illuminate\Http\Response
-     */
+
+    protected function updateQuickBooksItem($data)
+    {
+        $accessToken = 'eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..T_ByJCXcoL3oG7hCautcPA.eTj15RbTRr7zKyuhccwoxNxwQpylt9rJ4JJZmsm51XEbMKl1dRnZLqX4KjVIjRJ0E_rBT6nO7ANpl_H2ZE60OfAyCPbXNky2SUjlqiGKnPxj07F72zvht7dPY6O86f4WkuFAmREzPgIHalD1wIoS1a_t_-sj5JhO-NZXPA6P-vjMm5fc3tvNNntZykoz1QYXmzL7MJXCJY5VjDliZetCn3vCa_-zho_pT-oz2TLLmvk6iTax60jFK2CXMjlrPUm3O6yBVsMy9Ov7aOO0vuxHIQlVbvtH-1M8RpSCzYsnSGUSjAA7LItXEmw0fMOOnCcVHkikuriwgN__OdudfvGY4WYBmKwIADOB_9Zfq26cHvk8lhgnaMddlm8C0R0RkrNZuYa33q04TCJbrGbBkZAecbPWDCf3l6uYJ6oKtEGC4hHvUWh4aj6InrSZW82agNfqfEu3UpwtT4YZKlxO2cJScDviRi0UzwhP9abrP8RhQgsrcn-3Q59FPGZNjr7J4-KLXIQ1JYjNRyRNAb6NEPCPxGCzj5R2zXSykQLO8e7N1wAPdNlaqnjOYEhKt9L4VlQrBT68bVnvsmZvuMWSmp-QkLnhwgX4uEW9ULHMsvD4QDCp1fwNz6PgabLZPZh-DySbEEM1sWNcRgd37uLlHJLleT7aUYE6Qs4WeDAJxJINNjCRgeHi68yhKNLHFz7yftvVboUP8cioH1ot_TNRMzFYjEWEQbAqrNvuC97miIJt7V9--yXGWCZpMZCbuEw8GXDR.SdS8rLRME9GDoxsnLnJvYw';
+        $realmId = '9130357849536636';
+        $sandboxApiUrl = "https://sandbox-quickbooks.api.intuit.com/v3/company/{$realmId}/item";
+
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $accessToken,
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+        ])->post($sandboxApiUrl, $data);
+
+        return $response;
+    }
+
     public function show(Product $product)
     {
         //
@@ -165,29 +173,93 @@ class ProductController extends Controller
      * @param  \App\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function edit(Product $product)
+    public function edit($id)
     {
-        //
+        $product = Product::findOrFail($id);
+        $data['menu'] = "products";
+        $data['menu_sub'] = "";
+        $data['product'] = $product;
+
+        return view('products.edit', $data);
+
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Product  $product
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, $id)
     {
-        //
+        $user_id = Auth::user()->id;
+
+        try {
+            DB::beginTransaction();
+
+            // Your existing logic to update in the local database
+            $product = Product::findOrFail($id);
+
+            $syncToken = $product->SyncToken;
+
+            $data = [
+                'Id' => $request->input('ItemId'),
+                'Name' => $request->input('name'),
+                'Description' => $request->input('description'),
+                'UnitPrice' => $request->input('unit_price'),
+                'IncomeAccountRef' => [
+                    'name' => 'Sales of Product Income',
+                    'value' => '79',
+                ],
+                'ItemCategoryType'=>'Service',
+                'AssetAccountRef' => [
+                    'name' => 'Inventory Asset',
+                    'value' => '81',
+                ],
+                'Type' => $request->input('type'),
+                'SyncToken'=>$syncToken,
+                'ExpenseAccountRef' => [
+                    'name' => 'Cost of Goods Sold',
+                    'value' => '80',
+                ],
+            ];
+
+            $quickbooksResponse = $this->updateQuickBooksItem($data);
+
+            //dd($quickbooksResponse->json());
+
+            if ($quickbooksResponse->successful()) {
+                $quickbooksItem = $quickbooksResponse->json()['Item'];
+
+                // Your existing logic to update in the local database with QuickBooks data
+                $product->update([
+                    'Name' => $quickbooksItem['Name'],
+                    'Description' => $quickbooksItem['Description'] ?? null,
+                    'Active' => $quickbooksItem['Active'],
+                    'FullyQualifiedName' => $quickbooksItem['FullyQualifiedName'],
+                    'Taxable' => $quickbooksItem['Taxable'],
+                    'UnitPrice' => $quickbooksItem['UnitPrice'],
+                    'Type' => $quickbooksItem['Type'],
+                    'IncomeAccountRef' => json_encode($quickbooksItem['IncomeAccountRef']),
+                    'PurchaseCost' => $quickbooksItem['PurchaseCost'],
+                    'TrackQtyOnHand' => $quickbooksItem['TrackQtyOnHand'],
+                    'domain' => $quickbooksItem['domain'],
+                    'sparse' => $quickbooksItem['sparse'],
+                    'SyncToken' => $quickbooksItem['SyncToken'],
+                    'updatedby' => $user_id,
+                ]);
+
+                DB::commit();
+
+                return redirect()->route('products.index')->with('success', 'Product updated successfully');
+            } else {
+                DB::rollBack();
+                return redirect()->route('products.edit', ['id' => $id])->with('error', 'Something went wrong!');
+            }
+        } catch (QueryException $e) {
+            DB::rollBack();
+            return redirect()->route('products.edit', ['id' => $id])->with('error', 'Database error: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route('products.edit', ['id' => $id])->with('error', 'Something went wrong: ' . $e->getMessage());
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Product  $product
-     * @return \Illuminate\Http\Response
-     */
+
     public function destroy(Product $product,$id)
     {
         $product = Product::find($id);
@@ -264,4 +336,15 @@ class ProductController extends Controller
 
         return $response->json()['access_token'];
     }
+
+    public function autocomplete(Request $request)
+    {
+        $term = $request->input('product_name');
+
+        // Use the "limit" method to restrict the number of results
+        $products = Product::where('Name', 'LIKE', '%' . $term . '%')->limit(10)->get(['id', 'Name','UnitPrice']);
+
+        return response()->json($products);
+    }
+
 }

@@ -104,6 +104,27 @@
                         </li>
                     </ul>
                 </li>
+
+                <!-- Payment Section -->
+                <li class="nav-item has-treeview">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-money-check-alt"></i>
+
+                        <p>
+                            Create Payment
+                            <i class="fas fa-angle-left right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li>
+                            <a href="{{ route('payment-requests.index') }}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Create Payment Request</p>
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
                 @if(Auth::user()->id == 1)
                 <!-- Marchant Section -->
                 <li class="nav-item has-treeview">

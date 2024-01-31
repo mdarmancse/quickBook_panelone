@@ -40,7 +40,10 @@
                   <thead>
                   <tr>
                     <th>Item</th>
+                      <th>Description</th>
                     <th>Type</th>
+                    <th>Unit Price</th>
+
                     <th>Action</th>
                   </tr>
                   </thead>
@@ -48,10 +51,17 @@
                   @foreach($qb_products as $product)
 
                   <tr>
-                    <td width="50%">{{$product->Name}}</td>
-                    <td width="30%">{{$product->Description}}</td>
-                    <!--<td><a href="#" class="btn btn-success">Edit</a> | <a href="#" class="btn btn-danger">Delete</a></td>-->
-                    <td><a href="{{route('products.destroy',['id'=> $product->id])}}" class="btn btn-danger">Delete</a></td>
+                    <td width="30%">{{$product->Name}}</td>
+                      <td width="30%">{{$product->Description}}</td>
+                    <td width="20%">{{$product->Type}}</td>
+                    <td width="20%">{{$product->UnitPrice}}</td>
+
+                    <td>
+
+                        <a href="{{ route('products.edit',  $product->id) }}" class="btn btn-success"><i class="nav-icon fas fa-edit"></i></a>
+
+                    </td>
+{{--                    <td><a href="{{route('products.destroy',['id'=> $product->id])}}" class="btn btn-danger">Delete</a></td>--}}
                   </tr>
 
                   @endforeach

@@ -40,7 +40,10 @@
                   <thead>
                   <tr>
                     <th>Item</th>
+                      <th>Description</th>
                     <th>Type</th>
+                    <th>Unit Price</th>
+
                     <th>Action</th>
                   </tr>
                   </thead>
@@ -48,10 +51,17 @@
                   <?php $__currentLoopData = $qb_products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $product): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
 
                   <tr>
-                    <td width="50%"><?php echo e($product->Name); ?></td>
-                    <td width="30%"><?php echo e($product->Description); ?></td>
-                    <!--<td><a href="#" class="btn btn-success">Edit</a> | <a href="#" class="btn btn-danger">Delete</a></td>-->
-                    <td><a href="<?php echo e(route('products.destroy',['id'=> $product->id])); ?>" class="btn btn-danger">Delete</a></td>
+                    <td width="30%"><?php echo e($product->Name); ?></td>
+                      <td width="30%"><?php echo e($product->Description); ?></td>
+                    <td width="20%"><?php echo e($product->Type); ?></td>
+                    <td width="20%"><?php echo e($product->UnitPrice); ?></td>
+
+                    <td>
+
+                        <a href="<?php echo e(route('products.edit',  $product->id)); ?>" class="btn btn-success"><i class="nav-icon fas fa-edit"></i></a>
+
+                    </td>
+
                   </tr>
 
                   <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
