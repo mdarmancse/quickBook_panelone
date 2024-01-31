@@ -7,12 +7,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Dashboard</h1>
+                    <h1 class="m-0">Products</h1>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="<?php echo e(route('home')); ?>">Home</a></li>
-                        <li class="breadcrumb-item active">Dashboard</li>
+                        <li class="breadcrumb-item active">Products</li>
                     </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
@@ -64,20 +64,6 @@
                                 </div>
                             </div>
 
-                            <div class="form-group row">
-                                <label for="coa" class="col-sm-3 col-form-label">Chart of Account</label>
-                                <div class="col-sm-9">
-                                    <!-- Replace this select with your actual dropdown options -->
-                                    <select class="form-control"  id="coa" name="coa">
-                                        <!-- Your options here -->
-                                    </select>
-                                </div>
-                            </div>
-
-
-
-                            <!-- Hidden Input for QuickBooks Item ID -->
-                            <input type="hidden" value="" id="qb_item_id" name="qb_item_id">
 
                             <div class="form-group row">
                                 <div class="col-sm-12 text-center">

@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Product;
 use App\QBDataService;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
 class ProductController extends Controller
@@ -33,7 +35,7 @@ class ProductController extends Controller
         $user_id = Auth::user()->id;
 
         $data = [];
-        $products = Product::where('createdby',$user_id)->get();
+        $products = Product::where('createdby',$user_id)->orderBy('id','DESC')->get();
         $data['menu'] = "settings";
         $data['menu_sub'] = "";
         $data['qb_products'] = $products;
@@ -60,68 +62,83 @@ class ProductController extends Controller
         return view('products.create', $data);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+
     public function store(Request $request)
     {
+        $user_id = Auth::user()->id;
 
-        $productArray = [
-            'Name' => $request->input('name'),
-            'ItemId' => rand(1,1000),
-            'Description' => $request->input('description'),
-            'Type' => $request->input('type'),
-            'UnitPrice' => $request->input('unit_price'),
-            'Active' => true,
-            'TrackQtyOnHand' => true,
-            'createdby' => 2,
-            'updatedby' => 2,
-            // Add other fields based on your local database schema
-        ];
+        try {
 
-        $product = Product::create($productArray);
+            DB::beginTransaction();
 
-        $data = [
-            'Name' => $request->input('name'),
-            'Description' => $request->input('description'),
-            'UnitPrice' => $request->input('unit_price'),
-            'IncomeAccountRef' => [
-                'name' => 'Sales of Product Income',
-                'value' => '79',
-            ],
-            'AssetAccountRef' => [
-                'name' => 'Inventory Asset',
-                'value' => '81',
-            ],
-            'Type' =>  $request->input('type'),
-            'ExpenseAccountRef' => [
-                'name' => 'Cost of Goods Sold',
-                'value' => '80',
-            ],
-       ];
+            $data = [
+                'Name' => $request->input('name'),
+                'Description' => $request->input('description'),
+                'UnitPrice' => $request->input('unit_price'),
+                'IncomeAccountRef' => [
+                    'name' => 'Sales of Product Income',
+                    'value' => '79',
+                ],
+                'AssetAccountRef' => [
+                    'name' => 'Inventory Asset',
+                    'value' => '81',
+                ],
+                'Type' =>  $request->input('type'),
+                'ExpenseAccountRef' => [
+                    'name' => 'Cost of Goods Sold',
+                    'value' => '80',
+                ],
+            ];
 
+            $quickbooksResponse = $this->createQuickBooksItem($data);
 
+            if ($quickbooksResponse->successful()) {
+                $quickbooksItem = $quickbooksResponse->json()['Item'];
 
+                $productArray=     [
+                    'ItemId' => $quickbooksItem['Id'],
+                    'Name' => $quickbooksItem['Name'],
+                    'Description' => $quickbooksItem['Description']??null,
+                    'Active' => $quickbooksItem['Active'],
+                    'FullyQualifiedName' => $quickbooksItem['FullyQualifiedName'],
+                    'Taxable' => $quickbooksItem['Taxable'],
+                    'UnitPrice' => $quickbooksItem['UnitPrice'],
+                    'Type' => $quickbooksItem['Type'],
+                    'IncomeAccountRef' => json_encode($quickbooksItem['IncomeAccountRef']),
+                    'PurchaseCost' => $quickbooksItem['PurchaseCost'],
+                    'TrackQtyOnHand' => $quickbooksItem['TrackQtyOnHand'],
+                    'domain' => $quickbooksItem['domain'],
+                    'sparse' => $quickbooksItem['sparse'],
+                    'SyncToken' => $quickbooksItem['SyncToken'],
+                    'createdby' => $user_id,
+                    'updatedby' => $user_id,
+                ];
+                 Product::create($productArray);
 
-        $quickbooksResponse = $this->createQuickBooksItem($data);
-        dd($quickbooksResponse);
-        if ($quickbooksResponse->successful()) {
+                DB::commit();
 
-            $quickbooksItemId = $quickbooksResponse->json()['Item']['Id'];
+                return redirect()->route('products.index')->with('success', 'Product created successfully');
+            } else {
 
-            $product->update(['quickbooks_id' => $quickbooksItemId]);
+                DB::rollBack();
 
-            return redirect()->route('products.index')->with('success', 'Product created successfully');
+                return redirect()->route('products.create')->with('error', 'Something went wrong!');
+            }
+        } catch (QueryException $e) {
+
+            DB::rollBack();
+            return redirect()->route('products.create')->with('error', 'Database error: ' . $e->getMessage());
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+            return redirect()->route('products.create')->with('error', 'Something went wrong: ' . $e->getMessage());
         }
-
     }
+
     private function createQuickBooksItem(array $data)
     {
 
-        $accessToken = 'eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..fINrXgR1GfEvceGaGREfwQ.-iBu8QhNB9aEuAs-J5FQ445-1JqGNHYlMz_qmdPfaBS0Q1xa77CpdvpGuyLW5GAGgCk1_mFB7GKkhHqGcUs_w9UD3dOYj0VjfOWUu5mfhcmAHLFFbMZ6hkWNrk4BqiN0Cr0kKWaH9T4jOCpvIJeEIrLaXnOZxZ25XauL-DwnNIWz8VOMm3ofx1RNLogtOMySC1iA3x3yuWyp3YAwTgDAG2IaFRm5iVo2fuVpbya5VvRrp8WUE2zkYN-C0eBNdmhsnC3O1Ha98cmtP5Jgb-YS8InZ2Z5nLrveC_zMhCA7FGVjcIUyMtPGvZwjV5JlbQ1N2SatkyhTGswaC6bdGFoDwqCp_Czwc6mVqhDM2a63HSauMZGEX5yi-uaRc8o-Acq4LhoEVEKd_OA5qtbimtvCR-zbWd4NBkb4cIzzqCng5wGcCYN6GIiVmyy3S0bvIEWIPwHl1psA7Kqh7zc35_nGHBvRE9ZdrbLPvCGyF88oqzPjPwRiE62j0pRgZ1oFWaSE3-1bGnr4jIxs9_Bxml0EX6LLN_h0goOMYkdKb_ThAfP5-1MuTETP-y3UCQRN-vnWF7Eb0rnDrlMDLj9Z4mxasRkAiRrv8bT2iEEzPRrWW-gBtJdmScLrhkFCdIBSV1EE-OAhBLuJt3gLgVPS6sNTMRJZfMJp5sz2D7mgpalHCVzk6-ED4k59YFIG56kc78HWGGqZG7b0yl-jAtFkyvawNWWbqDFFcgHp9aESrwLkSA3ZFiAzHxJboxRuUrC8O4Px.B1WqNszs6puiDBNcd_ovUQ';
+        $accessToken = 'eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..6JpYYJuDlI3cNYNOyIW37g.-3Rf2E9Ks4069_KpUcSFmedzzkHwsAXrHxXkbvEy8YIvhDL6M-D5Cy8MgzX7EDnIZWm8m983A1NvnghT0NoXOCNzcN4fUrXhcnC9FoWA6_-13_h4Yzu_yW0LPem8_pNuwSTZ-a3H2jFq9UFijKnnSiSq3pGFQZ0WiPW2qpgYP0Sb4QDHLHEtjFbC4Py7d33d991myb49_LZFO5Pv9eQuhfFK6NbDDLfup6iFvkiwas_t_AnqZHI1Lsrv4jrEVXelKZcTcqAGFPLUYajDR527_CmZlwiNG4Orgfi2wVQ19kR2NEFogr7gS3aszdzhCch0p-0VfALJZ2vP16VfvkkQtChmnh8SFxuGDe4N-soxDceSXv_GY83gYtZCUXT0KNbr6IYCM5AE8QkIvml6GbReNNRWZ0Sam_l04kOuJg61645k19RrVuWDJ1UsbgQO9iTZ7ORQhv0ZMpFdWZwk5KteU_hhD3c_no4925_s6gIpf5EgNgEwdhBUEk9tyoOVk4oEgIUWRFT0bH2zvlP15or9o9z91V6dkyMLI9qRtDbRMkK85oWIpYlsmSQuDZkY0FD2bNAEnnTBWnseb9Ihh0wCoICPt1TlxI5WNDAsoMxXEho0HLSNKgcHAQemYS7tfa6CL6mcDcOw-WxRLC-307TjlT140K7BZxiy4Y22zjTtlQoQth5jwGFf8GUGLWIOsGkYURK5jmixfEGeevImN9bB6wd-oZD6LTpvgfhae3TUS1U.MGzb82Ukej942AaEpiEBuA';
         $realmId = '9130357849536636';
 
         $sandboxApiUrl = "https://sandbox-quickbooks.api.intuit.com/v3/company/{$realmId}/item?minorversion=70";

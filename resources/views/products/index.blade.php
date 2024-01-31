@@ -7,12 +7,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Dashboard</h1>
+            <h1 class="m-0">Products</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="{{route('home')}}">Home</a></li>
-              <li class="breadcrumb-item active">Dashboard</li>
+              <li class="breadcrumb-item active">Products</li>
             </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
@@ -27,26 +27,12 @@
           <div class="col-12">
 
             <div class="card">
-              <div class="card-header">
-                <h3 class="card-title">All Product</h3>
-              </div>
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="card-title mr-auto">All Products</h3>
 
-                <div class="card-body">
-                  <div class="form-group row">
-                    <label for="inputEmail3" class="col-sm-2 col-form-label">Product Name</label>
-                    <div class="col-sm-5">
-                      <select class="form-control" id="products" name="products">
-                          <option value="">Select..</option>
-                          @foreach($qb_products as $product)
-                          <option value="{{$product->Id}}">{{$product->FullyQualifiedName}}</option>
-                          @endforeach
-                      </select>
-                    </div>
-                    <a href="/settings/products/create/" id="createUrl" class="btn btn-info">Associate new product</a>
-                  </div>
-
-
+                    <a href="/settings/products/create/" id="createUrl" class="btn btn-info ">Add Product</a>
                 </div>
+
 
               <div class="card-body">
               <!-- /.card-header -->
