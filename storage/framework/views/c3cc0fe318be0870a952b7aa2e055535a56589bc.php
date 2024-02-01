@@ -125,6 +125,13 @@
                             </a>
                         </li>
 
+                        <li class="nav-item">
+                            <a href="<?php echo e(route('payment-requests.invoice-list')); ?>" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Manage Invoice</p>
+                            </a>
+                        </li>
+
                     </ul>
                 </li>
                 <?php if(Auth::user()->id == 1): ?>

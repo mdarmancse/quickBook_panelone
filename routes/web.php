@@ -70,8 +70,14 @@ Route::get('/marchants/create', [MarchantController::class, 'create'])->name('ma
 Route::post('/marchants', [MarchantController::class, 'store'])->name('marchants.store');
 Route::get('/marchants/edit/{id}', [MarchantController::class, 'edit'])->name('marchants.edit');
 Route::put('/marchants/update/{id}', [MarchantController::class, 'update'])->name('marchants.update');
+
 Route::delete('/marchants/destroy/{id}', [MarchantController::class, 'destroy'])->name('marchants.destroy');
 
 //Route For payemnt Request
 Route::get('/payment-requests', [PaymentRequestController::class, 'index'])->name('payment-requests.index');
 Route::post('/payment-requests', [PaymentRequestController::class, 'store'])->name('payment-requests.store');
+Route::get('/invoices/{id}', [PaymentRequestController::class, 'show'])->name('invoices.show');
+
+Route::get('/invoices', [PaymentRequestController::class, 'invoiceList'])->name('payment-requests.invoice-list');
+Route::get('/invoices/edit/{id}', [PaymentRequestController::class, 'edit'])->name('payment-requests.edit-invoice');
+Route::put('/invoices/update/{id}', [PaymentRequestController::class, 'update'])->name('payment-requests.update');

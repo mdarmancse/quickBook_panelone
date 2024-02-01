@@ -3,8 +3,14 @@
 
 namespace App\Http\Controllers;
 
+
 use Illuminate\Http\Request;
 use App\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+
+use App\Mail\WelcomeMail;
 
 class MarchantController extends Controller
 {
@@ -35,19 +41,24 @@ class MarchantController extends Controller
         ]);
 
         try {
-            User::create([
+            DB::beginTransaction();
+            $merchant = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => bcrypt($request->password), // Hash the password
+                'password' => bcrypt($request->password),
             ]);
 
-            return redirect()->route('marchants.index')->with('success', 'Marchant created successfully');
+            // Send welcome email
+            Mail::to($merchant->email)->send(new WelcomeMail($merchant, $request->password));
+            DB::commit();
+            return redirect()->route('marchants.index')->with('success', 'Merchant created successfully');
         } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Failed to create payment request or send  email', ['error' => $e->getMessage()]);
 
             return redirect()->back()->withInput()->withErrors(['error' => 'Something went wrong. Please try again.']);
         }
     }
-
     public function edit($id)
     {
         $marchant = User::findOrFail($id);
