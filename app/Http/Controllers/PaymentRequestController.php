@@ -4,6 +4,9 @@
 namespace App\Http\Controllers;
 
 use App\Customer;
+use App\Invoice;
+use App\InvoiceDetail;
+
 use App\PaymentRequest;
 use App\Product;
 use Illuminate\Http\Request;
@@ -29,33 +32,35 @@ class PaymentRequestController extends Controller
     // Store the payment-requests request
     public function store(Request $request)
     {
+       // dd($request->all());
         // Validate the incoming request data
         $request->validate([
             'customer_id' => 'required|exists:customers,id',
-            'items.*.item_id' => 'required|exists:items,id',
+            'discount_percentage' => 'nullable|numeric|min:0|max:100',
+            'items' => 'required|array|min:1',
+           'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
         ]);
 
-        // Your logic to store the payment-requests request in the local database
-        // You can use Eloquent relationships to associate the payment-requests request with customer and items
-
-        // Example:
-        $paymentRequest = new PaymentRequest([
+        // Create the invoice
+        $invoice = Invoice::create([
             'customer_id' => $request->input('customer_id'),
-            // Add other fields as needed
+            'total_before_discount' => $request->input('total_before_discount'),
+            'total_after_discount' => $request->input('total_after_discount'),
         ]);
 
-        $paymentRequest->save();
-
-        // Attach items to the payment-requests request
+        // Create invoice details
         foreach ($request->input('items') as $item) {
-            $paymentRequest->items()->attach($item['item_id'], ['quantity' => $item['quantity']]);
+            InvoiceDetail::create([
+                'invoice_id' => $invoice->id,
+                'product_id' => $item['product_id'],
+                'quantity' => $item['quantity'],
+                'unit_price' => $item['unit_price'],
+                'total' => $item['row_total'],
+            ]);
         }
 
-        // Your logic to sync with QuickBooks goes here
-        // Use the QuickBooks API to create a payment-requests request and associate it with the customer and items
-
-        // Redirect back with success message
-        return redirect()->route('payment-requests.index')->with('success', 'Payment request created successfully');
+        // Redirect or return a response as needed
+        return redirect()->route('payment-requests.index')->with('success', 'Payment Request successfully');
     }
 }

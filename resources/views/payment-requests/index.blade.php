@@ -1,11 +1,38 @@
 @extends('layouts.master')
 
 @section('content')
+    <!-- Add Bootstrap styles for better design -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0/css/select2.min.css" />
+
+    <style>
+        /* Additional CSS for styling enhancements */
+        .card {
+            width: 100%;
+            margin: 20px auto;
+        }
+        .cardTotal {
+            width: 80%;
+            margin: 20px auto;
+        }
+        .card-body {
+            padding: 20px;
+        }
+
+        /* Add more styling as needed */
+        .form-control {
+            margin-bottom: 10px;
+        }
+
+        .btn-info {
+            width: 100%;
+        }
+    </style>
+
     <section class="content">
         <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
+            <div class="row ">
+                <div class="col-lg-12">
                     <div class="card card-info">
                         <div class="card-header text-center">
                             <h3 class="card-title">Create Payment Request</h3>
@@ -56,10 +83,38 @@
                                 </table>
                             </div>
 
+                            <!-- Discount Field -->
+                            <div class="form-group row">
+                                <label for="discount_percentage" class="col-sm-3 col-form-label">Discount Percentage</label>
+                                <div class="col-sm-9">
+                                    <input type="number" class="form-control" id="discount_percentage" name="discount_percentage" placeholder="Enter discount percentage" min="0" max="100" oninput="calculateTotal()">
+                                </div>
+                            </div>
+
                             <!-- Total Card -->
-                            <div class="card">
+                            <div class="card cardTotal">
                                 <div class="card-header">
                                     <h5 class="card-title">Total</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <label for="total_before_discount">Total Before Discount:</label>
+                                            <input type="text" class="form-control" id="total_before_discount"  name="total_before_discount" readonly>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label for="total_after_discount">Total After Discount:</label>
+                                            <input type="text" class="form-control" id="total_after_discount" name="total_after_discount" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Commented out Tax Section -->
+                            <!--
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title">Tax</h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
@@ -74,6 +129,7 @@
                                     </div>
                                 </div>
                             </div>
+                            -->
 
                             <div class="form-group row mt-3">
                                 <div class="col-sm-12 text-center">
@@ -86,9 +142,38 @@
             </div>
         </div>
     </section>
+
+    <!-- Your existing script and stylesheet links -->
+
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0/js/select2.min.js"></script>
 
     <script type="text/javascript">
+        // Function to calculate total before and after discount
+        function calculateTotal() {
+            var totalBeforeDiscount = 0;
+
+            $('.product-row').each(function() {
+                var quantity = parseInt($(this).find('.quantity').val());
+                var unitPrice = parseFloat($(this).find('.row-total').attr('data-unit-price'));
+
+                if(quantity && unitPrice){
+                    var rowTotal = quantity * unitPrice;
+                    totalBeforeDiscount += rowTotal;
+
+                    $(this).find('.row-total').val(rowTotal.toFixed(2));
+                }
+            });
+
+            // Calculate total after discount
+            var discountPercentage = parseFloat($('#discount_percentage').val()) || 0;
+            var discountAmount = (totalBeforeDiscount * discountPercentage) / 100;
+            var totalAfterDiscount = totalBeforeDiscount - discountAmount;
+
+            $('#total_before_discount').val(totalBeforeDiscount.toFixed(2));
+            $('#total_after_discount').val(totalAfterDiscount.toFixed(2));
+        }
+
         $(document).ready(function() {
             $('#product_name').on('input', function() {
                 var product_name = $(this).val();
@@ -100,10 +185,8 @@
                     data: { product_name: product_name },
                     dataType: 'json',
                     success: function(data) {
-                        console.log('Received data:', data);
                         displayProductSuggestions(data);
                     }
-
                 });
             });
 
@@ -114,12 +197,12 @@
 
                 if (data.length > 0) {
                     data.forEach(function(product) {
-                        var suggestion = $('<div class="product-suggestion">' + product.Name + ' - $' + product.UnitPrice + '</div>');
+                        var suggestion = $('<div class="product-suggestion">' + product.Name + ' - ' + product.UnitPrice + '</div>');
 
                         suggestion.click(function() {
                             addProductToList(product.id, product.Name, product.UnitPrice);
-                            $('#product_name').val(''); // Reset the input field
-                            suggestionsDiv.empty(); // Clear suggestions
+                            $('#product_name').val('');
+                            suggestionsDiv.empty();
                             calculateTotal();
                         });
 
@@ -134,8 +217,10 @@
             function addProductToList(productId, productName, unitPrice) {
                 var productRow = '<tr class="product-row" data-product-id="' + productId + '">' +
                     '<td>' + productName + '</td>' +
-                    '<td>$' + unitPrice + '</td>' +
-                    '<td><input type="number" class="form-control quantity" name="items[' + productId + '][quantity]" placeholder="Quantity" min="1" required="" onkeyup="calculateTotal()"></td>' +
+                    '<td>' + unitPrice + '</td>' +
+                    '<td hidden><input type="number" class="form-control unit_price" name="items[' + productId + '][unit_price]" value="' + unitPrice + '"></td>' +
+                    '<td hidden><input type="number" class="form-control product_id" name="items[' + productId + '][product_id]" value="' + productId + '"></td>' +
+                    '<td><input type="number" class="form-control quantity" name="items[' + productId + '][quantity]" placeholder="Quantity" min="1" required="" oninput="calculateTotal()"></td>' +
                     '<td><input type="text" class="form-control row-total" name="items[' + productId + '][row_total]" readonly data-unit-price="' + unitPrice + '"></td>' +
                     '<td><button type="button" class="btn btn-danger btn-sm remove-product"><i class="fas fa-trash"></i></button></td>' +
                     '</tr>';
@@ -147,35 +232,6 @@
                 $(this).closest('tr').remove();
                 calculateTotal();
             });
-
-            // Calculate total before and after tax
-            function calculateTotal() {
-                var totalBeforeTax = 0;
-
-                $('.product-row').each(function() {
-                    var quantity = parseInt($(this).find('.quantity').val());
-                    var unitPrice = parseInt($(this).find('.row-total').attr('data-unit-price'));
-
-
-                        var rowTotal = quantity * unitPrice;
-                        totalBeforeTax += rowTotal;
-
-                        console.log(quantity) 
-                        console.log(unitPrice)
-                        console.log(rowTotal)
-
-                        $(this).find('.row-total').val(rowTotal.toFixed(2));
-
-                });
-
-                // Calculate total after tax (add your tax logic here)
-                var additionalTax = 0.1; // Change this to your actual tax rate
-                var totalAfterTax = totalBeforeTax * (1 + additionalTax);
-
-                $('#total_before_tax').val(totalBeforeTax.toFixed(2));
-                $('#total_after_tax').val(totalAfterTax.toFixed(2));
-            }
         });
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0/js/select2.min.js"></script>
 @endsection
