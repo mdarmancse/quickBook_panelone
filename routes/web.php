@@ -5,16 +5,6 @@ use App\Http\Controllers\PaymentRequestController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
 
 Route::get('/', function () {
     return view('welcome');
@@ -81,3 +71,14 @@ Route::get('/invoices/{id}', [PaymentRequestController::class, 'show'])->name('i
 Route::get('/invoices', [PaymentRequestController::class, 'invoiceList'])->name('payment-requests.invoice-list');
 Route::get('/invoices/edit/{id}', [PaymentRequestController::class, 'edit'])->name('payment-requests.edit-invoice');
 Route::put('/invoices/update/{id}', [PaymentRequestController::class, 'update'])->name('payment-requests.update');
+
+
+// Customer routes
+Route::prefix('customers')->group(function () {
+    Route::get('/', 'CustomerController@index')->name('customers.index');
+    Route::get('/create', 'CustomerController@create')->name('customers.create');
+    Route::post('/', 'CustomerController@store')->name('customers.store');
+    Route::get('/{id}/edit', 'CustomerController@edit')->name('customers.edit');
+    Route::put('/{id}', 'CustomerController@update')->name('customers.update');
+    Route::delete('/{id}', 'CustomerController@destroy')->name('customers.destroy');
+});

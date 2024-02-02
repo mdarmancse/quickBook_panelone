@@ -1,7 +1,7 @@
 <!-- Navbar -->
 <nav class="main-header navbar navbar-expand-lg navbar-light bg-light">
-    <!-- Left navbar links -->
     <div class="container">
+        <!-- Left navbar links -->
         <ul class="navbar-nav">
             <li class="nav-item">
                 <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
@@ -10,7 +10,6 @@
                 <a href="<?php echo e(route('home')); ?>" class="nav-link">Home</a>
             </li>
         </ul>
-
 
         <!-- Right navbar links -->
         <ul class="navbar-nav ml-auto">
@@ -36,134 +35,147 @@
 
 <!-- Main Sidebar Container -->
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
-    <!-- Brand Logo -->
-    <a href="<?php echo e(route('home')); ?>" class="brand-link">
-        <img src="<?php echo e(asset('admin/dist/img/AdminLTELogo.png')); ?>" alt="Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-        <span class="brand-text font-weight-light">Panelone QB App Dashboard</span>
-    </a>
+    <div class="container">
+        <!-- Brand Logo -->
+        <a href="<?php echo e(route('home')); ?>" class="brand-link">
+            <img src="<?php echo e(asset('admin/dist/img/AdminLTELogo.png')); ?>" alt="Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+            <span class="brand-text font-weight-light">Panelone QB</span>
+        </a>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <!-- Sidebar Menu -->
-        <nav class="mt-2">
-            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Sidebar Menu -->
+            <nav class="mt-2">
+                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                    <!-- Dashboard -->
+                    <li class="nav-item">
+                        <a href="#" class="nav-link <?php echo e($menu == 'home' ? 'active' : ''); ?>">
+                            <i class="nav-icon fas fa-tachometer-alt"></i>
+                            <p>Dashboard</p>
+                        </a>
+                    </li>
 
-                <!-- Dashboard -->
-                <li class="nav-item">
-                    <a href="#" class="nav-link <?php if ($menu == 'home') {echo 'active'; } ?>">
-                        <i class="nav-icon fas fa-tachometer-alt"></i>
-                        <p>Dashboard</p>
-                    </a>
-                </li>
+                    <!-- QB Settings -->
+                    <li class="nav-item has-treeview <?php echo e($menu == 'settings' ? 'menu-is-opening menu-open' : ''); ?>">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-cogs"></i>
+                            <p>
+                                QB Settings
+                                <i class="fas fa-angle-left right"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item ml-2">
+                                <a href="<?php echo e(route('settings')); ?>" class="nav-link">
+                                    <p>Quickbooks Settings</p>
+                                </a>
+                            </li>
+                            <li class="nav-item ml-2">
+                                <a href="<?php echo e(route('change.password')); ?>" class="nav-link">
+                                    <p>Change Password</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
 
-                <!-- QB Settings -->
-                <li class="nav-item has-treeview <?php if ($menu == 'settings') {echo 'menu-is-opening menu-open'; } ?>">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-cogs"></i>
-                        <p>
-                            QB Settings
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="<?php echo e(route('settings')); ?>" class="nav-link">
-                                <i class="far fa-circle text-success nav-icon"></i>
-                                <p>Quickbooks Settings</p>
+                    <!-- Customers Section -->
+                    <li class="nav-item has-treeview">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-users"></i>
+                            <p>
+                                Customers
+                                <i class="fas fa-angle-left right"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item ml-2">
+                                <a href="<?php echo e(route('customers.index')); ?>" class="nav-link">
+                                    <p>Customer List</p>
+                                </a>
+                            </li>
+                            <li class="nav-item ml-2">
+                                <a href="<?php echo e(route('customers.create')); ?>" class="nav-link">
+                                    <p>Add Customer</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- Products Section -->
+                    <li class="nav-item has-treeview">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-box"></i>
+                            <p>
+                                Products
+                                <i class="fas fa-angle-left right"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item ml-2">
+                                <a href="<?php echo e(route('products.index')); ?>" class="nav-link">
+                                    <p>Product List</p>
+                                </a>
+                            </li>
+                            <li class="nav-item ml-2">
+                                <a href="<?php echo e(route('products.create')); ?>" class="nav-link">
+                                    <p>Add Product</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- Payment Section -->
+                    <li class="nav-item has-treeview">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-money-check-alt"></i>
+                            <p>
+                                Create Payment
+                                <i class="fas fa-angle-left right"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item ml-2">
+                                <a href="<?php echo e(route('payment-requests.index')); ?>" class="nav-link">
+                                    <p>Create Payment Request</p>
+                                </a>
+                            </li>
+                            <li class="nav-item ml-2">
+                                <a href="<?php echo e(route('payment-requests.invoice-list')); ?>" class="nav-link">
+                                    <p>Manage Invoice</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <?php if(Auth::user()->id == 1): ?>
+                        <!-- Merchant Section -->
+                        <li class="nav-item has-treeview">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-store"></i>
+                                <p>
+                                    Merchant
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
                             </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item ml-2">
+                                    <a href="<?php echo e(route('marchants.index')); ?>" class="nav-link">
+                                        <p>Merchant List</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item ml-2">
+                                    <a href="<?php echo e(route('marchants.create')); ?>" class="nav-link">
+                                        <p>Add Merchant</p>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
-
-                        <li class="nav-item">
-                            <a href="<?php echo e(route('change.password')); ?>" class="nav-link">
-                                <i class="far fa-circle text-warning nav-icon"></i>
-                                <p>Change Password</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <!-- Products Section -->
-                <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-box"></i>
-
-                        <p>
-                            Products
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="<?php echo e(route('products.index')); ?>" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Product List</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?php echo e(route('products.create')); ?>" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Add Product</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-                <!-- Payment Section -->
-                <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-money-check-alt"></i>
-
-                        <p>
-                            Create Payment
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li>
-                            <a href="<?php echo e(route('payment-requests.index')); ?>" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Create Payment Request</p>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="<?php echo e(route('payment-requests.invoice-list')); ?>" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Manage Invoice</p>
-                            </a>
-                        </li>
-
-                    </ul>
-                </li>
-                <?php if(Auth::user()->id == 1): ?>
-                <!-- Marchant Section -->
-                <li class="nav-item has-treeview">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-store"></i>
-                        <p>
-                            Marchant
-                            <i class="fas fa-angle-left right"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="<?php echo e(route('marchants.index')); ?>" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Merchant List</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="<?php echo e(route('marchants.create')); ?>" class="nav-link">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Add Marchant</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <?php endif; ?>
-            </ul>
-        </nav>
-        <!-- /.sidebar-menu -->
+                    <?php endif; ?>
+                </ul>
+            </nav>
+            <!-- /.sidebar-menu -->
+        </div>
+        <!-- /.sidebar -->
     </div>
-    <!-- /.sidebar -->
 </aside>
 <?php /**PATH C:\laragon\www\git\quickBook_panelone\resources\views/layouts/left-nav.blade.php ENDPATH**/ ?>
