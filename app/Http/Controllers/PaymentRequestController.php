@@ -8,7 +8,7 @@ use App\Invoice;
 use App\InvoiceDetail;
 
 use App\Mail\InvoiceCreated;
-use App\PaymentRequest;
+use App\Mail\InvoiceUpdated;
 use App\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -122,7 +122,7 @@ class PaymentRequestController extends Controller
 
     public function update(Request $request, $id)
     {
-
+      //  dd($request->all());
         $request->validate([
             'customer_id' => 'required|exists:customers,id',
             'discount_percentage' => 'nullable|numeric|min:0|max:100',
@@ -130,17 +130,15 @@ class PaymentRequestController extends Controller
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
         ]);
+
         try {
             DB::beginTransaction();
-
 
             $invoice = Invoice::with('details')->find($id);
 
             if (!$invoice) {
-
                 return redirect()->route('payment-requests.invoice-list')->with('error', 'Invoice not found');
             }
-
 
             $invoice->update([
                 'customer_id' => $request->input('customer_id'),
@@ -148,27 +146,27 @@ class PaymentRequestController extends Controller
                 'total_after_discount' => $request->input('total_after_discount'),
             ]);
 
-
+            // Clear existing details and recreate them
             $invoice->details()->delete();
 
             foreach ($request->input('items') as $item) {
-                $invoice->details()->create([
-                    'product_id' => $item['product_id'],
-                    'quantity' => $item['quantity'],
-                    'unit_price' => $item['unit_price'],
-                    'total' => $item['row_total'],
-                ]);
+                $product = Product::find($item['product_id']);
+                if ($product) {
+                    $invoice->details()->create([
+                        'product_id' => $product->id,
+                        'quantity' => $item['quantity'],
+                        'unit_price' => $product->UnitPrice,
+                        'total' => $item['quantity'] * $product->UnitPrice,
+                    ]);
+                }
             }
 
             $customer_id = $request->input('customer_id');
             $customerEmail = Customer::where('id', $customer_id)->value('email');
 
-
-
-            if ($customerEmail){
-                Mail::to($customerEmail)->send(new InvoiceCreated($invoice));
+            if ($customerEmail) {
+                Mail::to($customerEmail)->send(new InvoiceUpdated($invoice));
                 Log::info('Invoice email sent successfully', ['customer_email' => $customerEmail, 'invoice_id' => $invoice->id]);
-
             }
 
             DB::commit();
@@ -179,10 +177,9 @@ class PaymentRequestController extends Controller
 
             Log::error('Unexpected error during invoice update', ['error' => $exception->getMessage()]);
 
-            return redirect()->route('payment-requests.edit-invoice',$id)->with('error', 'An unexpected error occurred during invoice update');
+            return redirect()->route('payment-requests.edit-invoice', $id)->with('error', $exception->getMessage());
         }
     }
-
 
 
 

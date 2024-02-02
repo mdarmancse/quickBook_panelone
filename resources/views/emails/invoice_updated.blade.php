@@ -8,7 +8,7 @@
 <body>
 <p>Dear {{ $invoice->customer->name }},</p>
 
-<p>Your invoice has been successfully created.</p>
+<p>Your invoice has been successfully updated.</p>
 
 <p>Invoice details:</p>
 <ul>

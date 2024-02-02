@@ -8,7 +8,7 @@
 <body>
 <p>Dear <?php echo e($invoice->customer->name); ?>,</p>
 
-<p>Your invoice has been successfully created.</p>
+<p>Your invoice has been successfully updated.</p>
 
 <p>Invoice details:</p>
 <ul>
@@ -24,4 +24,4 @@
 
 </body>
 </html>
-<?php /**PATH C:\laragon\www\git\quickBook_panelone\resources\views/emails/invoice_created.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\laragon\www\git\quickBook_panelone\resources\views/emails/invoice_updated.blade.php ENDPATH**/ ?>

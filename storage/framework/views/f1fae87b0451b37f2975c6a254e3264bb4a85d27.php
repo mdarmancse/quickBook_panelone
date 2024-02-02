@@ -50,7 +50,7 @@
                                 <label for="customer_id" class="col-sm-3 col-form-label">Select Customer</label>
                                 <div class="col-sm-9">
                                     <?php if(isset($customers) && count($customers) > 0): ?>
-                                        <select class="form-control"  id="customer_id" required="" disabled>
+                                        <select class="form-control" id="customer_id" required="" disabled>
                                             <option value="">-- Select Customer --</option>
                                             <?php $__currentLoopData = $customers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $customer): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                 <option value="<?php echo e($customer->id); ?>" <?php if($invoice->customer_id == $customer->id): ?> selected <?php endif; ?>><?php echo e($customer->name); ?> (<?php echo e($customer->email); ?>)</option>
@@ -89,12 +89,14 @@
                                         <tr class="product-row" data-product-id="<?php echo e($detail->product->id); ?>">
                                             <td><?php echo e($detail->product->Name); ?></td>
                                             <td><?php echo e($detail->unit_price); ?></td>
-                                            <td hidden><input type="hidden" class="form-control product_id" name="items[<?php echo e($detail->product->id); ?>][product_id]" value="<?php echo e($detail->product_id); ?>" min="1" required="" ></td>
+                                            <td hidden><input type="hidden" class="form-control product_id" name="items[<?php echo e($detail->product->id); ?>][product_id]" value="<?php echo e($detail->product_id); ?>" min="1" required=""></td>
+                                            <td hidden><input type="hidden" class="form-control unit_price" name="items[<?php echo e($detail->product->id); ?>][unit_price]" value="<?php echo e($detail->unit_price); ?>" min="1" required=""></td>
                                             <td><input type="number" class="form-control quantity" name="items[<?php echo e($detail->product->id); ?>][quantity]" value="<?php echo e($detail->quantity); ?>" min="1" required="" oninput="calculateTotal()"></td>
                                             <td><input type="text" class="form-control row-total" name="items[<?php echo e($detail->product->id); ?>][row_total]" readonly data-unit-price="<?php echo e($detail->unit_price); ?>" value="<?php echo e($detail->total); ?>"></td>
                                             <td><button type="button" class="btn btn-danger btn-sm remove-product"><i class="fas fa-trash"></i></button></td>
                                         </tr>
                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+
                                     </tbody>
                                 </table>
                             </div>
@@ -221,6 +223,7 @@
                     '</tr>';
                 $('#products_list').append(productRow);
             }
+
 
             // Remove product from the list
             $('#products_list').on('click', '.remove-product', function () {

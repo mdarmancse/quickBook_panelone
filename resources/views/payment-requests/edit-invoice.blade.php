@@ -51,7 +51,7 @@
                                 <label for="customer_id" class="col-sm-3 col-form-label">Select Customer</label>
                                 <div class="col-sm-9">
                                     @if(isset($customers) && count($customers) > 0)
-                                        <select class="form-control"  id="customer_id" required="" disabled>
+                                        <select class="form-control" id="customer_id" required="" disabled>
                                             <option value="">-- Select Customer --</option>
                                             @foreach($customers as $customer)
                                                 <option value="{{ $customer->id }}" @if($invoice->customer_id == $customer->id) selected @endif>{{ $customer->name }} ({{ $customer->email }})</option>
@@ -90,12 +90,14 @@
                                         <tr class="product-row" data-product-id="{{ $detail->product->id }}">
                                             <td>{{ $detail->product->Name }}</td>
                                             <td>{{ $detail->unit_price }}</td>
-                                            <td hidden><input type="hidden" class="form-control product_id" name="items[{{ $detail->product->id }}][product_id]" value="{{ $detail->product_id }}" min="1" required="" ></td>
+                                            <td hidden><input type="hidden" class="form-control product_id" name="items[{{ $detail->product->id }}][product_id]" value="{{ $detail->product_id }}" min="1" required=""></td>
+                                            <td hidden><input type="hidden" class="form-control unit_price" name="items[{{ $detail->product->id }}][unit_price]" value="{{ $detail->unit_price }}" min="1" required=""></td>
                                             <td><input type="number" class="form-control quantity" name="items[{{ $detail->product->id }}][quantity]" value="{{ $detail->quantity }}" min="1" required="" oninput="calculateTotal()"></td>
                                             <td><input type="text" class="form-control row-total" name="items[{{ $detail->product->id }}][row_total]" readonly data-unit-price="{{ $detail->unit_price }}" value="{{ $detail->total }}"></td>
                                             <td><button type="button" class="btn btn-danger btn-sm remove-product"><i class="fas fa-trash"></i></button></td>
                                         </tr>
                                     @endforeach
+
                                     </tbody>
                                 </table>
                             </div>
@@ -222,6 +224,7 @@
                     '</tr>';
                 $('#products_list').append(productRow);
             }
+
 
             // Remove product from the list
             $('#products_list').on('click', '.remove-product', function () {
