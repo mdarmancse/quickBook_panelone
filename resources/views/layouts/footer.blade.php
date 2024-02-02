@@ -73,8 +73,6 @@
 <!-- bs-custom-file-input -->
 <script src="{{asset('admin/plugins/bs-custom-file-input/bs-custom-file-input.min.js') }}"></script>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.1/dist/js/select2.min.js"></script>
 
 
 <!-- date-range-picker -->

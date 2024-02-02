@@ -20,11 +20,10 @@
     </div>
 
     <section class="content">
-        <div class="container">
-            <div class="row justify-content-center">
+        <div class="container-fluid">
+            <div class="row">
                 <div class="col-lg-12">
                     <div class="card">
-
 
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h3 class="card-title mr-auto">Customer List</h3>
@@ -49,7 +48,7 @@
 
                                 </div>
                             <?php endif; ?>
-                            <table class="table table-bordered datatable">
+                            <table  id="example1" class="table table-bordered table-striped">
                                 <thead>
                                 <tr>
                                     <th>ID</th>

@@ -13,8 +13,8 @@
 <p>Invoice details:</p>
 <ul>
     <li>Invoice ID: <?php echo e($invoice->id); ?></li>
-    <li>Total Before Discount: $<?php echo e($invoice->total_before_discount); ?></li>
-    <li>Total After Discount: $<?php echo e($invoice->total_after_discount); ?></li>
+    <li>Total Before Discount: <?php echo e($invoice->total_before_discount); ?></li>
+    <li>Total After Discount: <?php echo e($invoice->total_after_discount); ?></li>
 
 </ul>
 

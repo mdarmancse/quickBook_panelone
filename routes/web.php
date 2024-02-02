@@ -25,7 +25,7 @@ Route::post('/change/password/store', 'ChangePasswordController@store')->middlew
 
 Route::get('/settings', 'SettingsController@index')->middleware('auth')->name('settings');
 Route::get('/settings/edit/{id?}', 'SettingsController@edit')->middleware('auth')->name('settings.edit');
-Route::post('/settings/store/{settings}', 'SettingsController@store')->middleware('auth')->name('settings.store');
+Route::post('/settings/store/{settings?}', 'SettingsController@store')->middleware('auth')->name('settings.store');
 Route::get('/home', 'HomeController@index')->middleware('auth')->name('home');
 Route::get('/dashboard', 'DashboardController@index')->middleware('auth')->name('dashboard');
 Route::get('/customer', 'CustomerController@index')->middleware('auth')->name('customer');
@@ -84,3 +84,16 @@ Route::prefix('customers')->group(function () {
 
     Route::get('/syncCustomers', 'CustomerController@syncCustomers');
 });
+
+
+Route::get('/webhook', function () {
+    return "<h3>Webhook Page Coming Soon...</h3>";
+})->name('webhook');
+
+Route::get('/privacy', function () {
+    return "<h3>Privacy Policy Page Coming Soon...</h3>";
+})->name('privacy');
+
+Route::get('/terms', function () {
+    return "<h3>Terms & Condition Page Coming Soon...</h3>";
+})->name('terms');

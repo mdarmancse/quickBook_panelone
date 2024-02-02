@@ -42,7 +42,9 @@ class SettingsController extends Controller
     public function edit($id=null)
     {
 
-        $settings=$id?Settings::find($id):Settings::first();
+        $settings=Settings::find($id);
+
+       // dd($settings);
         $data = [];
         $data['menu'] = "settings";
         $data['menu_sub'] = "";
@@ -64,7 +66,7 @@ class SettingsController extends Controller
             'QBORealmID' => $request->input('QBORealmID'),
         ]);
 
-        return back()->with('info', 'Updated successfully!');
+        return redirect()->route('settings')->with('success', 'Updated successfully!');
     }
     private function qbInvoke()
     {

@@ -30,8 +30,7 @@
                         <h3 class="card-title">Quickbooks Settings Update</h3>
                     </div>
 
-                    <form class="form-horizontal" action="<?php echo e(route('settings.store', ['settings'=> $settings ])); ?>" method="POST">
-                        <?php echo csrf_field(); ?>
+                    <form class="form-horizontal" action="<?php echo e($settings ? route('settings.store', ['id' => $settings->id]) : route('settings.store')); ?>" method="POST">                        <?php echo csrf_field(); ?>
                         <?php echo method_field('POST'); ?>
                         <?php echo $__env->make('flash-message', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
@@ -39,57 +38,65 @@
                             <div class="form-group row">
                                 <label for="ClientID" class="col-sm-3 col-form-label">Client ID</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="ClientID" name="ClientID" value="<?php echo e($settings->ClientID); ?>" required>
+                                    <input type="text" class="form-control" id="ClientID" name="ClientID" value="<?php echo e($settings ? $settings->ClientID : null); ?>" required>
                                 </div>
                             </div>
 
                             <div class="form-group row">
                                 <label for="ClientSecret" class="col-sm-3 col-form-label">Client Secret</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="ClientSecret" name="ClientSecret" value="<?php echo e($settings->ClientSecret); ?>" required>
+                                    <input type="text" class="form-control" id="ClientSecret" name="ClientSecret" value="<?php echo e($settings ? $settings->ClientSecret : null); ?>" required>
                                 </div>
                             </div>
 
                             <div class="form-group row">
                                 <label for="RedirectURI" class="col-sm-3 col-form-label">Redirect URL</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="RedirectURI" name='RedirectURI'  value="<?php echo e(route('qb.callback', ['user' => auth()->user()->id])); ?>" readonly>
+                                    <?php if($settings && $settings->RedirectURI): ?>
+                                        <input type="text" class="form-control" id="RedirectURI" name='RedirectURI' value="<?php echo e($settings->RedirectURI); ?>" readonly>
+                                    <?php else: ?>
+                                        <input type="text" class="form-control" id="RedirectURI" name='RedirectURI' value="<?php echo e(route('qb.callback', ['user' => auth()->user()->id])); ?>" readonly>
+                                    <?php endif; ?>
                                 </div>
                             </div>
 
                             <div class="form-group row">
                                 <label for="scope" class="col-sm-3 col-form-label">Scope</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="scope" name='scope'  value="<?php echo e($settings->scope); ?>" readonly>
+                                    <input type="text" class="form-control" id="scope" name='scope' value="<?php echo e($settings ? $settings->scope : null); ?>" >
                                 </div>
                             </div>
 
                             <div class="form-group row">
                                 <label for="baseUrl" class="col-sm-3 col-form-label">Base URL</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="baseUrl" name='baseUrl'  value="<?php echo e($settings->baseUrl); ?>" readonly>
+                                    <input type="text" class="form-control" id="baseUrl" name='baseUrl' value="<?php echo e($settings ? $settings->baseUrl : null); ?>" >
                                 </div>
                             </div>
 
                             <div class="form-group row">
                                 <label for="QBORealmID" class="col-sm-3 col-form-label">QBO Realm ID</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="QBORealmID" name='QBORealmID'  value="<?php echo e($settings->QBORealmID); ?>" readonly>
+                                    <input type="text" class="form-control" id="QBORealmID" name='QBORealmID' value="<?php echo e($settings ? $settings->QBORealmID : null); ?>" >
                                 </div>
                             </div>
 
                             <div class="form-group row">
                                 <label for="others" class="col-sm-3 col-form-label">Others (Optional)</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="others" name="others"  value="<?php echo e($settings->others); ?>">
+                                    <input type="text" class="form-control" id="others" name="others" value="<?php echo e($settings ? $settings->others : null); ?>">
                                 </div>
                             </div>
+
+                            <!-- Add more fields as needed -->
+
                         </div>
 
                         <div class="card-footer text-center">
                             <button type="submit" class="btn btn-info">Update</button>
                         </div>
                     </form>
+
                 </div>
             </div>
         </div>

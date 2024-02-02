@@ -18,7 +18,7 @@
 
 <p>It is recommended to change your password after your first login.</p>
 
-<p>Thank you for choosing YourApp!</p>
+<p>Thank you for choosing Our App!</p>
 </body>
 </html>
 <?php /**PATH C:\laragon\www\git\quickBook_panelone\resources\views/emails/welcome.blade.php ENDPATH**/ ?>
