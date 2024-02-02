@@ -29,12 +29,25 @@
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h3 class="card-title mr-auto">Customer List</h3>
 
-                            <a href="/customers/create" id="createUrl" class="btn btn-info ">Add Customer</a>
+                            <div class="d-flex">
+                                <a href="/customers/syncCustomers" class="btn btn-danger mr-2">Sync Customers</a>
+                                <a href="/customers/create" class="btn btn-info">Add Customer</a>
+                            </div>
+
                         </div>
                         <div class="card-body">
                             @include('qb-flash-message')
-
-                            <table class="table table-bordered">
+                            @if(session('error'))
+                                <div class="alert alert-danger">
+                                    {{ session('error') }}
+                                </div>
+                            @endif
+                            @if(session('success'))
+                                <div class="alert alert-success">
+                                    {{ session('success') }}
+                                </div>
+                            @endif
+                            <table class="table table-bordered datatable">
                                 <thead>
                                 <tr>
                                     <th>ID</th>

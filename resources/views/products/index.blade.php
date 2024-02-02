@@ -30,10 +30,22 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h3 class="card-title mr-auto">All Products</h3>
 
-                    <a href="/settings/products/create/" id="createUrl" class="btn btn-info ">Add Product</a>
+                    <div class="d-flex">
+                        <a href="/products/syncItems" class="btn btn-danger mr-2">Sync Items</a>
+                        <a href="/settings/products/create/" class="btn btn-info">Add Product</a>
+                    </div>
                 </div>
 
-
+                @if(session('error'))
+                    <div class="alert alert-danger">
+                        {{ session('error') }}
+                    </div>
+                @endif
+                @if(session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                @endif
               <div class="card-body">
               <!-- /.card-header -->
                 <table id="example1" class="table table-bordered table-striped">

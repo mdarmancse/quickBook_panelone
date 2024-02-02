@@ -12,11 +12,7 @@ use Illuminate\Support\Facades\Http;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
 
@@ -271,56 +267,54 @@ class ProductController extends Controller
 
     public function syncItems()
     {
+        try {
+            $user_id = Auth::user()->id;
 
-        // Replace these values with your actual QuickBooks credentials
-        $realmId = '9130357849536636';
-        $clientId = 'AB5kFbletRbjWcZWUqor6CHxtY730MlAZ9nEcuFNtmjfNwOdtU';
-        $clientSecret = 'oW2mxLmn6WgFxQOzKDn9xrSGV4j8i0RkKo6gaAYW';
+            $realmId = '9130357849536636';
 
+            $accessToken = 'eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..gWtNOQ_npS-RSgrXYiPwYg.67ywnTiXUUt2NgXdT9GinH-9DUFHKgwYRlnlap1uVs-8Ihmm0Q5hhzRRLys9QWI6_y-KkZquQe1OChlUX5grnvEONy9efsRPAAnL4zl4m9j_5ARt79s1warmVuMOUego9XWrvRpVWZWWiqhelhw-lvT2--cgkOvoIIIytd1GaWGQzTh9j0ulVhczUDx_7esjHuKjbugwT_DrmK3sxbDjT1yes7411PILCdhgrNAKkZmNuR_AMAAGdIV0kEFBb-JS1pCALqtdtHWimKzVXppMtEYdGAFFaW5qjas4Vg5ABWLXBFqs-iyLbeMqtqh3VIlb3OdV4bQm07RGhp6-LUViTJXaLZeHNmPTrjZKz_GT690JEvFichHUkFpSpTMOkQViaaXJO4O5vc8KP6sdq9H_1pL4OywXFXcnWYiYUgPUazORkoyxhXPqwl0lSbh9ETsATflp7W2DZ3gYMbswJ7tEjGxvuNr_Y3ztY2VlSILSlTYzC1F41euiofNHJOHHjfqJF7CmK2L88Yg1SRsmPdxUnEJG-UzhlYkZeN1TleCTBj0Y_7BXeNVE1UgyLfyuutPvNR3lafgL1rx3m6RaMArsuHewx_Z_gS5ZhSgMw1jkMXsIbMLzHyf2NoBT-y8_mvnBe_6-hlgPlYt1DKIL9F7Ay8TW6klvUbI3sJmOmxBf1ktBmn6lbRyXcUjUM8yKzuNuvteB-mtUpbdCZlsBLPpGoqCdLCuvaTqABF1udA6RgXPCxScP52ma8pvfpddwPDJb.VjcBz6R9BcLDK1y9uPrmpA';
 
-       // $accessToken = $this->getAccessToken($clientId, $clientSecret, $realmId);
-        $accessToken = 'eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..OcfR6Kcw_lIbzVsMXZ42Bw.3kUINn9uxYlfbho0089ixlO_J8JUbbQdxzzJE61W6iLeoBASNorP6cJL48s-k2pKdnp3OSeeMW9YKo_39ZUkQngT62llTBJQvMHASU2JaNR-KCjRnDgCUrPvyj9B0W2xb6WuNYYZRCGLrhkxxlGyEgJR-FHjZrmabvGMBTdllNCBzZ1lKSvWr8G_6ROYpFuy47b1UGrNx2fq_6HXS0EORq_eTCZbKxldtjsDNEwgCy72wtZDhloQr3Haqf9Qsi49euQVVPTeJzUILkoE3KrdOfDiKD9MCBasoTY6xEImAK_4B5lmi7MwRsv3irK5LChZX13q-Wk3GAf_bXw-kBO29BTuyiCZMZUy_PP5eFENxmjZlb0gT-64vSCMxS8zo62eGHwAxpZYQIQhZXMqar_LBPuBVuH98ErCQrTWfh9Oq-E-y7yPKoHdPYe79c946pBl8ddsAIlJCPIWPIvmo5TSiSezXdUjtFHJfEHeX9qHvJp9kJCzT7UYgUdIKmYbZ3dkZ1BHMqoMsTPg78R4aMBnVdbF40AEBp_71Z_UcxwBUrh9brM3QhwSJ7N-LAW4vsU3Uegy0UE3z0ewzBhmsSnLHY6adFteE4UwEPmWXusWeqfutu0GycwKTdRalE5LqHrUw1UukCMkMFYtdOgOUFNE5vC6HJ2h5S8OEyxkexSkOWGcJWsbozDP9FKDxKiEoN3tA4fQFwIQCwuaZ1ly55DiX05BsE5GQBYVjDNMlKCJPGw.dywjn_KjOIiH7sPJuZYhGA';
+            $sandboxApiUrl = "https://sandbox-quickbooks.api.intuit.com/v3/company/{$realmId}/query?query=select * from Item&minorversion=40";
 
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $accessToken,
+                'Accept' => 'application/json',
+            ])->get($sandboxApiUrl);
 
-        $sandboxApiUrl = "https://sandbox-quickbooks.api.intuit.com/v3/company/9130357849536636/query?query=select * from Item&minorversion=40";
-
-
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $accessToken,
-            'Accept' => 'application/json',
-        ])->get($sandboxApiUrl);
+            $items = $response->json()['QueryResponse']['Item'] ?? [];
 
 
 
-        $items = $response->json()['QueryResponse']['Item'] ?? [];
+            foreach ($items as $item) {
 
-//dd($response->json());
+                Product::updateOrCreate(
+                    ['ItemId' => $item['Id']],
+                    [
+                        'Name' => $item['Name'],
+                        'Description' => $item['Description'] ?? null,
+                        'Active' => $item['Active'],
+                        'FullyQualifiedName' => $item['FullyQualifiedName'],
+                        'Taxable' => $item['Taxable'] ?? null,
+                        'UnitPrice' => $item['UnitPrice'] ?? null,
+                        'Type' => $item['Type'] ?? null,
+                        'IncomeAccountRef' => isset($item['IncomeAccountRef']) ? json_encode($item['IncomeAccountRef']) : null,                        'PurchaseCost' => $item['PurchaseCost'] ?? null,
+                        'TrackQtyOnHand' => $item['TrackQtyOnHand'] ?? null,
+                        'domain' => $item['domain'] ?? null,
+                        'sparse' => $item['sparse'] ?? null,
+                        'SyncToken' => $item['SyncToken'],
+                        'createdby' => $user_id,
+                        'updatedby' => $user_id,
+                    ]
+                );
+            }
 
-        foreach ($items as $item) {
-            Product::updateOrCreate(
-                ['ItemId' => $item['Id']],
-                [
-                    'Name' => $item['Name'],
-                    'Description' => $item['Description']??null,
-                    'Active' => $item['Active'],
-                    'FullyQualifiedName' => $item['FullyQualifiedName'],
-                    'Taxable' => $item['Taxable'],
-                    'UnitPrice' => $item['UnitPrice'],
-                    'Type' => $item['Type'],
-                    'IncomeAccountRef' => json_encode($item['IncomeAccountRef']),
-                    'PurchaseCost' => $item['PurchaseCost'],
-                    'TrackQtyOnHand' => $item['TrackQtyOnHand'],
-                    'domain' => $item['domain'],
-                    'sparse' => $item['sparse'],
-                    'SyncToken' => $item['SyncToken'],
-                ]
-            );
+            return redirect()->route('products.index')->with('success', 'Items synchronized successfully');
+        } catch (QueryException $e) {
+            return redirect()->route('products.index')->with('error', 'Database error: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            return redirect()->route('products.index')->with('error', 'Something went wrong: ' . $e->getMessage());
         }
-
-
-        return response()->json(['message' => 'Items synchronized successfully']);
     }
-
     // Your actual implementation of getAccessToken
     private function getAccessToken($clientId, $clientSecret, $realmId)
     {

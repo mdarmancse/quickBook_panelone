@@ -45,7 +45,7 @@ Route::get('/products/autocomplete', [ProductController::class, 'autocomplete'])
 Route::get('/settings/products/destroy/{id}', 'ProductController@destroy')->name('products.destroy');
 Route::post('/settings/products', 'ProductController@store')->name('products.store');
 
-Route::get('/settings/syncItems', 'ProductController@syncItems');
+Route::get('/products/syncItems', 'ProductController@syncItems');
 
 
 // Route for Quickbook Callback
@@ -81,4 +81,6 @@ Route::prefix('customers')->group(function () {
     Route::get('/{id}/edit', 'CustomerController@edit')->name('customers.edit');
     Route::put('/{id}', 'CustomerController@update')->name('customers.update');
     Route::delete('/{id}', 'CustomerController@destroy')->name('customers.destroy');
+
+    Route::get('/syncCustomers', 'CustomerController@syncCustomers');
 });

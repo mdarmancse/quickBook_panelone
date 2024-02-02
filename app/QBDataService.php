@@ -16,6 +16,7 @@ class QBDataService
             'auth_mode' => 'oauth2',
             'ClientID' => $setting['ClientID'],
             'ClientSecret' =>  $setting['ClientSecret'],
+            'AccessToken' =>  $setting['AccessToken'],
             'RedirectURI' => $setting['RedirectURI'],
             'scope' => $setting['scope'],
             'baseUrl' => $setting['baseUrl']

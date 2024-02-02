@@ -29,12 +29,27 @@
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h3 class="card-title mr-auto">Customer List</h3>
 
-                            <a href="/customers/create" id="createUrl" class="btn btn-info ">Add Customer</a>
+                            <div class="d-flex">
+                                <a href="/customers/syncCustomers" class="btn btn-danger mr-2">Sync Customers</a>
+                                <a href="/customers/create" class="btn btn-info">Add Customer</a>
+                            </div>
+
                         </div>
                         <div class="card-body">
                             <?php echo $__env->make('qb-flash-message', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+                            <?php if(session('error')): ?>
+                                <div class="alert alert-danger">
+                                    <?php echo e(session('error')); ?>
 
-                            <table class="table table-bordered">
+                                </div>
+                            <?php endif; ?>
+                            <?php if(session('success')): ?>
+                                <div class="alert alert-success">
+                                    <?php echo e(session('success')); ?>
+
+                                </div>
+                            <?php endif; ?>
+                            <table class="table table-bordered datatable">
                                 <thead>
                                 <tr>
                                     <th>ID</th>
