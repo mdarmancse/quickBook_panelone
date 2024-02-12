@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use QuickBooksOnline\API\Facades\Item;
 
 class ProductController extends Controller
 {
@@ -80,34 +81,39 @@ class ProductController extends Controller
                     'name' => 'Cost of Goods Sold',
                     'value' => '80',
                 ],
+                'Id'=>date("Ymdhs"),
+                'SyncToken'=>1
             ];
 
-            $quickbooksResponse = $this->createQuickBooksItem($data);
+       //     $quickbooksResponse = $this->createQuickBooksItem($data);
+
+            $quickbooksResponse = Item::create($data);
 
 
+            if ($quickbooksResponse) {
 
-            if ($quickbooksResponse->successful()) {
-                $quickbooksItem = $quickbooksResponse->json()['Item'];
-
-                $productArray=     [
-                    'ItemId' => $quickbooksItem['Id'],
-                    'Name' => $quickbooksItem['Name'],
-                    'Description' => $quickbooksItem['Description']??null,
-                    'Active' => $quickbooksItem['Active'],
-                    'FullyQualifiedName' => $quickbooksItem['FullyQualifiedName'],
-                    'Taxable' => $quickbooksItem['Taxable'],
-                    'UnitPrice' => $quickbooksItem['UnitPrice'],
-                    'Type' => $quickbooksItem['Type'],
-                    'IncomeAccountRef' => json_encode($quickbooksItem['IncomeAccountRef']),
-                    'PurchaseCost' => $quickbooksItem['PurchaseCost'],
-                    'TrackQtyOnHand' => $quickbooksItem['TrackQtyOnHand'],
-                    'domain' => $quickbooksItem['domain'],
-                    'sparse' => $quickbooksItem['sparse'],
-                    'SyncToken' => $quickbooksItem['SyncToken'],
+                $productArray = [
+                    'ItemId' => $quickbooksResponse->Id->value,
+                    'Name' => $quickbooksResponse->Name,
+                    'Description' => $quickbooksResponse->Description ?? null,
+                    'Active' => $quickbooksResponse->Active,
+                    'FullyQualifiedName' => $quickbooksResponse->FullyQualifiedName,
+                    'Taxable' => $quickbooksResponse->Taxable,
+                    'UnitPrice' => $quickbooksResponse->UnitPrice,
+                    'Type' => $quickbooksResponse->Type->value,
+                    'IncomeAccountRef' => json_encode($quickbooksResponse->IncomeAccountRef),
+                    'PurchaseCost' => $quickbooksResponse->PurchaseCost,
+                    'TrackQtyOnHand' => $quickbooksResponse->TrackQtyOnHand,
+                    'domain' => $quickbooksResponse->domain,
+                    'sparse' => $quickbooksResponse->sparse,
+                    'SyncToken' => $quickbooksResponse->SyncToken,
                     'createdby' => $user_id,
                     'updatedby' => $user_id,
                 ];
-                 Product::create($productArray);
+
+             //   dd($productArray);
+
+                Product::create($productArray);
 
                 DB::commit();
 

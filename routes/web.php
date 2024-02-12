@@ -3,6 +3,7 @@
 use App\Http\Controllers\MarchantController;
 use App\Http\Controllers\PaymentRequestController;
 use App\Http\Controllers\ProductController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 
@@ -19,6 +20,7 @@ Route::get('/register', function () {
 //$this->get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
 
 Auth::routes();
+Route::get('/test', 'TestingController@index');
 
 Route::get('/change/password', 'ChangePasswordController@index')->middleware('auth')->name('change.password');
 Route::post('/change/password/store', 'ChangePasswordController@store')->middleware('auth')->name('change.password.store');
@@ -86,9 +88,8 @@ Route::prefix('customers')->group(function () {
 });
 
 
-Route::get('/webhook', function () {
-    return "<h3>Webhook Page Coming Soon...</h3>";
-})->name('webhook');
+Route::post('/webhook', 'WebhookController@index');
+Route::get('/testGetCustomer', 'TestingController@testGetCustomer');
 
 Route::get('/privacy', function () {
     return "<h3>Privacy Policy Page Coming Soon...</h3>";

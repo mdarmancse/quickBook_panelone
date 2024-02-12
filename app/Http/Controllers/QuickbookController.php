@@ -60,8 +60,7 @@ class QuickbookController extends Controller
 
 
         $accessToken = $this->getAccessToken($clientId, $clientSecret, $realmId);
-        dd($accessToken);
-        exit();
+
 
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $accessToken,
