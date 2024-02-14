@@ -1,6 +1,6 @@
-@extends('layouts.master')
 
-@section('content')
+
+<?php $__env->startSection('content'); ?>
 
 <!-- Content Header (Page header) -->
 <div class="content-header">
@@ -11,7 +11,7 @@
             </div><!-- /.col -->
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                    <li class="breadcrumb-item"><a href="{{route('home')}}">Home</a></li>
+                    <li class="breadcrumb-item"><a href="<?php echo e(route('home')); ?>">Home</a></li>
                     <li class="breadcrumb-item active">Dashboard</li>
                 </ol>
             </div><!-- /.col -->
@@ -30,74 +30,74 @@
                         <h3 class="card-title">Quickbooks Settings Update</h3>
                     </div>
 
-                    <form class="form-horizontal" action="{{ $settings ? route('settings.store', ['id' => $settings->id]) : route('settings.store') }}" method="POST">                        @csrf
-                        @method('POST')
-                        @include('flash-message')
+                    <form class="form-horizontal" action="<?php echo e($settings ? route('settings.store', ['id' => $settings->id]) : route('settings.store')); ?>" method="POST">                        <?php echo csrf_field(); ?>
+                        <?php echo method_field('POST'); ?>
+                        <?php echo $__env->make('flash-message', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
                         <div class="card-body">
                             <div class="form-group row">
                                 <label for="ClientID" class="col-sm-3 col-form-label">Client ID</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="ClientID" name="ClientID" value="{{ $settings ? $settings->ClientID : null }}" required>
+                                    <input type="text" class="form-control" id="ClientID" name="ClientID" value="<?php echo e($settings ? $settings->ClientID : null); ?>" required>
                                 </div>
                             </div>
 
                             <div class="form-group row">
                                 <label for="ClientSecret" class="col-sm-3 col-form-label">Client Secret</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="ClientSecret" name="ClientSecret" value="{{ $settings ? $settings->ClientSecret : null }}" required>
+                                    <input type="text" class="form-control" id="ClientSecret" name="ClientSecret" value="<?php echo e($settings ? $settings->ClientSecret : null); ?>" required>
                                 </div>
                             </div>
 
                             <div class="form-group row">
                                 <label for="RedirectURI" class="col-sm-3 col-form-label">Redirect URL</label>
                                 <div class="col-sm-9">
-                                    @if($settings && $settings->RedirectURI)
-                                        <input type="text" class="form-control" id="RedirectURI" name='RedirectURI' value="{{ $settings->RedirectURI }}" readonly>
-                                    @else
-                                        <input type="text" class="form-control" id="RedirectURI" name='RedirectURI' value="{{ route('qb.callback', ['user' => auth()->user()->id]) }}" readonly>
-                                    @endif
+                                    <?php if($settings && $settings->RedirectURI): ?>
+                                        <input type="text" class="form-control" id="RedirectURI" name='RedirectURI' value="<?php echo e($settings->RedirectURI); ?>" readonly>
+                                    <?php else: ?>
+                                        <input type="text" class="form-control" id="RedirectURI" name='RedirectURI' value="<?php echo e(route('qb.callback', ['user' => auth()->user()->id])); ?>" readonly>
+                                    <?php endif; ?>
                                 </div>
                             </div>
 
                             <div class="form-group row">
                                 <label for="scope" class="col-sm-3 col-form-label">Scope</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="scope" name='scope' value="{{ $settings ? $settings->scope : null }}" >
+                                    <input type="text" class="form-control" id="scope" name='scope' value="<?php echo e($settings ? $settings->scope : null); ?>" >
                                 </div>
                             </div>
 
                             <div class="form-group row">
                                 <label for="baseUrl" class="col-sm-3 col-form-label">Base URL</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="baseUrl" name='baseUrl' value="{{ $settings ? $settings->baseUrl : null }}" >
+                                    <input type="text" class="form-control" id="baseUrl" name='baseUrl' value="<?php echo e($settings ? $settings->baseUrl : null); ?>" >
                                 </div>
                             </div>
 
                             <div class="form-group row">
                                 <label for="QBORealmID" class="col-sm-3 col-form-label">QBO Realm ID</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="QBORealmID" name='QBORealmID' value="{{ $settings ? $settings->QBORealmID : null }}" >
+                                    <input type="text" class="form-control" id="QBORealmID" name='QBORealmID' value="<?php echo e($settings ? $settings->QBORealmID : null); ?>" >
                                 </div>
                             </div>
 
-{{--                            <div class="form-group row">--}}
-{{--                                <label for="transaction_key" class="col-sm-3 col-form-label">Transaction Key</label>--}}
-{{--                                <div class="col-sm-9">--}}
-{{--                                    <input type="text" class="form-control" id="transaction_key" name='transaction_key' value="{{ $settings ? $settings->transaction_key : null }}" >--}}
-{{--                                </div>--}}
-{{--                            </div>--}}
-{{--                            <div class="form-group row">--}}
-{{--                                <label for="ifield_key" class="col-sm-3 col-form-label">Ifield Key</label>--}}
-{{--                                <div class="col-sm-9">--}}
-{{--                                    <input type="text" class="form-control" id="ifield_key" name='ifield_key' value="{{ $settings ? $settings->QBORealmID : null }}" >--}}
-{{--                                </div>--}}
-{{--                            </div>--}}
+
+
+
+
+
+
+
+
+
+
+
+
 
                             <div class="form-group row">
                                 <label for="others" class="col-sm-3 col-form-label">Others (Optional)</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="others" name="others" value="{{ $settings ? $settings->others : null }}">
+                                    <input type="text" class="form-control" id="others" name="others" value="<?php echo e($settings ? $settings->others : null); ?>">
                                 </div>
                             </div>
 
@@ -118,4 +118,6 @@
 
 <!-- /.content -->
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\git\quickBook_panelone\resources\views/settings/edit.blade.php ENDPATH**/ ?>

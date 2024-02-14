@@ -68,6 +68,12 @@
                                     <p>Quickbooks Settings</p>
                                 </a>
                             </li>
+
+                            <li class="nav-item ml-2">
+                                <a href="{{ route('cardknox') }}" class="nav-link">
+                                    <p>Cardknox Settings</p>
+                                </a>
+                            </li>
                             <li class="nav-item ml-2">
                                 <a href="{{ route('change.password') }}" class="nav-link">
                                     <p>Change Password</p>

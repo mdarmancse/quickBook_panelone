@@ -26,8 +26,11 @@ Route::get('/change/password', 'ChangePasswordController@index')->middleware('au
 Route::post('/change/password/store', 'ChangePasswordController@store')->middleware('auth')->name('change.password.store');
 
 Route::get('/settings', 'SettingsController@index')->middleware('auth')->name('settings');
+Route::get('/cardknox', 'SettingsController@cardknoxIndex')->middleware('auth')->name('cardknox');
 Route::get('/settings/edit/{id?}', 'SettingsController@edit')->middleware('auth')->name('settings.edit');
+Route::get('/cardknox/edit/{id?}', 'SettingsController@cardknoxEdit')->middleware('auth')->name('cardknox.edit');
 Route::post('/settings/store/{settings?}', 'SettingsController@store')->middleware('auth')->name('settings.store');
+Route::post('/settings/cardknoxStore/{settings?}', 'SettingsController@cardknoxStore')->middleware('auth')->name('settings.cardknoxStore');
 Route::get('/home', 'HomeController@index')->middleware('auth')->name('home');
 Route::get('/dashboard', 'DashboardController@index')->middleware('auth')->name('dashboard');
 Route::get('/customer', 'CustomerController@index')->middleware('auth')->name('customer');
