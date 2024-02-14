@@ -26,32 +26,43 @@ class WebhookController extends Controller
 
     public function index()
     {
-        $dataService = QBDataService::init();
-        $payLoad = file_get_contents("php://input");
-        $verified = WebhooksService::verifyPayload($this->webhook_token, $payLoad, $_SERVER['HTTP_INTUIT_SIGNATURE']);
 
-        if ($verified == true) {
-            mail("amd55077@gmail.com", "QB webhook data", $payLoad);
+            $dataService = QBDataService::init();
+            $payLoad = file_get_contents("php://input");
+            $verified = WebhooksService::verifyPayload($this->webhook_token, $payLoad, $_SERVER['HTTP_INTUIT_SIGNATURE']);
+               mail("amd55077@gmail.com", "QB vERIFY data", $verified);
 
-            $payLoad_data = json_decode($payLoad, true);
+            if ($verified == true) {
+                try {
+                mail("amd55077@gmail.com", "QB webhook data", $payLoad);
 
-            foreach ($payLoad_data['eventNotifications'] as $event_noti) {
-                $realmId = $event_noti['realmId'];
-                foreach ($event_noti['dataChangeEvent']['entities'] as $entity) {
-                    $name = $entity['name'];
-                    $id = $entity['id'];
-                    if ($name == 'Customer') {
-                        $response = $dataService->FindById('Customer', $id);
-                        self::updateOrCreateCustomer($response);
+                $payLoad_data = json_decode($payLoad, true);
 
-                    }
-                    if ($name == 'Item') {
-                        $response = $dataService->FindById('Item', $id);
-                        self::updateOrCreateItem($response);
+                foreach ($payLoad_data['eventNotifications'] as $event_noti) {
+                    $realmId = $event_noti['realmId'];
+                    foreach ($event_noti['dataChangeEvent']['entities'] as $entity) {
+                        $name = $entity['name'];
+                        $id = $entity['id'];
+                        if ($name == 'Customer') {
+                            $response = $dataService->FindById('Customer', $id);
+                            mail("amd55077@gmail.com", "QB Customer data", $response);
+                            self::updateOrCreateCustomer($response);
+                        }
+                        if ($name == 'Item') {
+                            $response = $dataService->FindById('Item', $id);
+                            mail("amd55077@gmail.com", "QB Item data", $response);
+                            self::updateOrCreateItem($response);
+                        }
                     }
                 }
+                }catch (\Exception $e){
+                    mail("amd55077@gmail.com", "QB Error ", json_encode($e->getMessage()));
+
+                }
             }
-        }
+
+
+
     }
 
     public function updateOrCreateItem($response)
@@ -82,14 +93,24 @@ class WebhookController extends Controller
             ['quickbooks_id' => $response->Id],
             [
                 'name' => $response->DisplayName,
-                'email' => $response->PrimaryEmailAddr->Address,
-                'phone' => $response->PrimaryPhone->FreeFormNumber,
-                'address' => $response->BillAddr->Line1,
-                'city' => $response->BillAddr->City,
-                'country' => $response->BillAddr->Country,
-                'state' => $response->BillAddr->CountrySubDivisionCode,
-                'zip' => $response->BillAddr->PostalCode,
+                'email' => $response->PrimaryEmailAddr->Address ?? null,
+                'phone' => $response->PrimaryPhone->FreeFormNumber ?? null,
+                'address' => $response->BillAddr->Line1 ?? null,
+                'city' => $response->BillAddr->City ?? null,
+                'country' => $response->BillAddr->Country ?? null,
+                'state' => $response->BillAddr->CountrySubDivisionCode ?? null,
+                'zip' => $response->BillAddr->PostalCode ?? null,
                 'SyncToken' => $response->SyncToken,
+
+//                'SyncToken' => $resultObj->SyncToken,
+//                'name' => $resultObj->DisplayName,
+//                'email' => $resultObj->PrimaryEmailAddr->Address ?? null,
+//                'phone' => $resultObj->PrimaryPhone->FreeFormNumber?? null,
+//                'address' => $resultObj->BillAddr->Line1 ?? null,
+//                'city' => $resultObj->BillAddr->City?? null,
+//                'country' => $resultObj->BillAddr->Country ?? null,
+//                'state' => $resultObj->BillAddr->CountrySubDivisionCode ?? null,
+//                'zip' => $resultObj->BillAddr->PostalCode ?? null,
             ]
         );
     }
@@ -102,7 +123,7 @@ class WebhookController extends Controller
         $response = $dataService->FindById('Customer', $id);
 
         echo "<pre>";
-        print_r($response->FullyQualifiedName);
+        print_r($response);
         echo "</pre>";
         die();
 

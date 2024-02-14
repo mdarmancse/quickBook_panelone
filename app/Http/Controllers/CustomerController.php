@@ -62,26 +62,28 @@ class CustomerController extends Controller
                     'Line1' => $request->input('address'),
                     'Country' => $request->input('country')
                 ],
-                'Id'=>date('Ymdhs'),
+               // 'Id'=>date('Ymdhs'),
                 'SyncToken'=>1
 
             ];
 
           // $quickbooksResponse = $this->createOrUpdateQBCustomers($customerData);
             $quickbooksResponse = \QuickBooksOnline\API\Facades\Customer::create($customerData);
+            $resultObj = $dataService->Add($quickbooksResponse);
+            //echo '<pre>';print_r($resultObj);exit();
 
-            if ($quickbooksResponse) {
+            if ($resultObj) {
                 $customerArray = [
-                    'quickbooks_id' => $quickbooksResponse->Id->value,
-                    'SyncToken' => $quickbooksResponse->SyncToken,
-                    'name' => $quickbooksResponse->DisplayName,
-                    'email' => $quickbooksResponse->PrimaryEmailAddr->Address ?? null,
-                    'phone' => $quickbooksResponse->PrimaryPhone->FreeFormNumber?? null,
-                    'address' => $quickbooksResponse->BillAddr->Line1 ?? null,
-                    'city' => $quickbooksResponse->BillAddr->City?? null,
-                    'country' => $quickbooksResponse->BillAddr->Country ?? null,
-                    'state' => $quickbooksResponse->BillAddr->CountrySubDivisionCode ?? null,
-                    'zip' => $quickbooksResponse->BillAddr->PostalCode ?? null,
+                    'quickbooks_id' => $resultObj->Id,
+                    'SyncToken' => $resultObj->SyncToken,
+                    'name' => $resultObj->DisplayName,
+                    'email' => $resultObj->PrimaryEmailAddr->Address ?? null,
+                    'phone' => $resultObj->PrimaryPhone->FreeFormNumber?? null,
+                    'address' => $resultObj->BillAddr->Line1 ?? null,
+                    'city' => $resultObj->BillAddr->City?? null,
+                    'country' => $resultObj->BillAddr->Country ?? null,
+                    'state' => $resultObj->BillAddr->CountrySubDivisionCode ?? null,
+                    'zip' => $resultObj->BillAddr->PostalCode ?? null,
                     'createdby' => $user_id,
                     'updatedby' => $user_id,
                 ];
@@ -122,7 +124,7 @@ class CustomerController extends Controller
 
         try {
             DB::beginTransaction();
-            $dataService = QBDataService::init();
+           $dataService = QBDataService::init();
 
             // Your existing logic to update in the local database
             $customer = Customer::findOrFail($id);
@@ -130,7 +132,7 @@ class CustomerController extends Controller
             $syncToken = $customer->SyncToken;
 
             $data = [
-                'Id' => $customer->quickbooks_id,
+//                'Id' => $customer->quickbooks_id,
                 'DisplayName' => $request->input('name'),
                 'PrimaryEmailAddr' => [
                     'Address' => $request->input('email'),
@@ -147,31 +149,33 @@ class CustomerController extends Controller
                 ],
                 'SyncToken' => $syncToken,
             ];
+
             $customerId=$customer->quickbooks_id;
-           // $customerToUpdate = $dataService->FindById('Customer', $customerId);
+           $customerToUpdate = $dataService->Query("SELECT * FROM Customer WHERE id='$customerId'");
+            $theCustomer='';
+            if(!empty($customerToUpdate) && sizeof($customerToUpdate) == 1){
+                $theCustomer = current($customerToUpdate);
+            }
 
-         //   $quickbooksResponse = $this->createOrUpdateQBCustomers($data);
-            $quickbooksResponse = \QuickBooksOnline\API\Facades\Customer::update($customerId,$data);
+            $quickbooksResponse = \QuickBooksOnline\API\Facades\Customer::update($theCustomer,$data);
 
-
-            dd($quickbooksResponse);
-            if ($quickbooksResponse->successful()) {
-                $quickbooksCustomer = $quickbooksResponse->json()['Customer'];
-
-                $customer->update([
-                    'id' => $id,
-                    'quickbooks_id' => $quickbooksCustomer['Id'],
-                    'name' => $quickbooksCustomer['DisplayName'],
-                    'email' => $quickbooksCustomer['PrimaryEmailAddr']['Address'],
-                    'phone' => $quickbooksCustomer['PrimaryPhone']['FreeFormNumber'],
-                    'address' => $quickbooksCustomer['BillAddr']['Line1'],
-                    'city' => $quickbooksCustomer['BillAddr']['City'],
-                    'country' => $quickbooksCustomer['BillAddr']['Country'],
-                    'state' => $quickbooksCustomer['BillAddr']['CountrySubDivisionCode'],
-                    'zip' => $quickbooksCustomer['BillAddr']['PostalCode'],
-                    'SyncToken' => $quickbooksCustomer['SyncToken'],
+            if ($quickbooksResponse) {
+                $customerArray = [
+                    'id'=>$id,
+                    'quickbooks_id' => $quickbooksResponse->Id,
+                    'SyncToken' => $quickbooksResponse->SyncToken,
+                    'name' => $quickbooksResponse->DisplayName,
+                    'email' => $quickbooksResponse->PrimaryEmailAddr->Address ?? null,
+                    'phone' => $quickbooksResponse->PrimaryPhone->FreeFormNumber?? null,
+                    'address' => $quickbooksResponse->BillAddr->Line1 ?? null,
+                    'city' => $quickbooksResponse->BillAddr->City?? null,
+                    'country' => $quickbooksResponse->BillAddr->Country ?? null,
+                    'state' => $quickbooksResponse->BillAddr->CountrySubDivisionCode ?? null,
+                    'zip' => $quickbooksResponse->BillAddr->PostalCode ?? null,
+                    'createdby' => $user_id,
                     'updatedby' => $user_id,
-                ]);
+                ];
+                $customer->update($customerArray);
 
                 DB::commit();
 

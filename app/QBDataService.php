@@ -11,13 +11,20 @@ class QBDataService
     public static function init()
     {
         $user = auth()->user();
-       // echo '<pre>';print_r($user);exit();
+        if ($user) {
+            $qbAuth = $user->qbAuth;
+            $setting = $user->setting;
+        } else {
+            $setting = Settings::where('user_id', 1)->first()->toArray();
+            $qbAuth = Auth::where('user_id', 1)->first();
+        }
 
-        $setting = $user->setting;
+
+//        $setting = $user->setting;
         $dataService = DataService::Configure(array(
             'auth_mode' => 'oauth2',
             'ClientID' => $setting['ClientID'],
-            'ClientSecret' =>  $setting['ClientSecret'],
+            'ClientSecret' => $setting['ClientSecret'],
             'RedirectURI' => $setting['RedirectURI'],
             'scope' => $setting['scope'],
             'baseUrl' => $setting['baseUrl']
@@ -26,10 +33,11 @@ class QBDataService
         /*
          * Retrieve the accessToken value from session variable
          */
-        $qbAuth = $user->qbAuth;
-
+      //  $qbAuth = $user->qbAuth;
+     //   echo '<pre>';print_r($qbAuth);exit();
         $accessToken = $qbAuth->refreshToken(); // we are re generating accrss token.
 
+      //  echo '<pre>';print_r($accessToken);exit();
         $dataService->updateOAuth2Token($accessToken);
 
         return $dataService;

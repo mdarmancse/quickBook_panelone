@@ -29,8 +29,24 @@ class Auth extends Model
 
     public function refreshToken()
     {
-        $setting = \Illuminate\Support\Facades\Auth::user()->setting;
+//        $setting = \Illuminate\Support\Facades\Auth::user()->setting;
+        $user = auth()->user();
+        if ($user) {
+            $setting = $user->setting;
+        } else {
+            $setting = Settings::where('user_id', 1)->first()->toArray();
+        }
 
+//        if (!$setting) {
+//            $setting = Settings::where('user_id', 1)->first();
+//
+//            if ($setting) {
+//                $setting = $setting->toArray();
+//            } else {
+//
+//                $setting = [];
+//            }
+//        }
         $accessToken = $this->getToken();
         $dataService = DataService::Configure(array(
             'auth_mode' => 'oauth2',

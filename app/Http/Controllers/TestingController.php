@@ -28,15 +28,15 @@ class TestingController extends Controller
         /* for Customer */
       //  $product = $dataService->FindById('Customer', $id);
          $id = 2;
-        $product = $dataService->FindById('Item', $id);
+        //$product = $dataService->FindById('Item', $id);
         //$product = $dataService->Query("SELECT * FROM Customer WHERE id='$id'");
-        //$product = $dataService->Query("SELECT * FROM Customer");
+      //  $product = $dataService->Query("SELECT * FROM Customer");
 
 
         /* for Item */
         //$product = $dataService->FindById('Item', $id);
         //$product = $dataService->Query("SELECT * FROM Item WHERE id='$id'");
-        //$product = $dataService->Query("SELECT * FROM item");
+        $product = $dataService->Query("SELECT * FROM item");
 
 
         /* for Invoice */
