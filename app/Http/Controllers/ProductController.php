@@ -106,40 +106,28 @@ class ProductController extends Controller
 //            ];
 
             $quickbooksResponse = \QuickBooksOnline\API\Facades\Item::create($data);
+           // echo '<pre>';print_r($quickbooksResponse);exit();
+
             $resultObj = $dataService->Add($quickbooksResponse);
 
            // echo '<pre>';print_r($resultObj);exit();
 
-//            $error = $dataService->getLastError();
-//            if ($error) {
-//                echo "The Status code is: " . $error->getHttpStatusCode() . "\n";
-//                echo "The Helper message is: " . $error->getOAuthHelperError() . "\n";
-//                echo "The Response message is: " . $error->getResponseBody() . "\n";
-//            }else {
-//                echo "Created Id={$resultObj->Id}. Reconstructed response body:\n\n";
-//                $xmlBody = XmlObjectSerializer::getPostXmlFromArbitraryEntity($resultObj, $urlResource);
-//                echo $xmlBody . "\n";
-//            }
-//            exit();
             if ($resultObj) {
-
                 $productArray = [
                     'ItemId' => $resultObj->Id,
                     'Name' => $resultObj->Name,
                     'Description' => $resultObj->Description ?? null,
-                    'Active' => $resultObj->Active,
+                    'Active' => $resultObj->Active ? 1 : 0,
                     'FullyQualifiedName' => $resultObj->FullyQualifiedName,
-                    'Taxable' => $resultObj->Taxable,
-                    'UnitPrice' => $resultObj->UnitPrice,
-                    'Type' => $resultObj->Type->value,
-                    'IncomeAccountRef' => json_encode($resultObj->IncomeAccountRef),
-                    'PurchaseCost' => $resultObj->PurchaseCost,
-                    'TrackQtyOnHand' => $resultObj->TrackQtyOnHand,
-                    'domain' => $resultObj->domain,
-                    'sparse' => $resultObj->sparse,
+                    'Taxable' => $resultObj->Taxable ? 1 : 0,
+                    'UnitPrice' => $resultObj->UnitPrice ?? null,
+                    'Type' => $resultObj->Type ?? null,
+                    'IncomeAccountRef' => isset($resultObj->IncomeAccountRef) ? json_encode($resultObj->IncomeAccountRef) : null,
+                    'PurchaseCost' => $resultObj->PurchaseCost ?? null,
+                    'TrackQtyOnHand' => $resultObj->TrackQtyOnHand ? 1 : 0,
                     'SyncToken' => $resultObj->SyncToken,
-                    'createdby' => $user_id,
-                    'updatedby' => $user_id,
+                    'createdby' => 1,
+                    'updatedby' => 1,
                 ];
 
 
@@ -252,30 +240,35 @@ class ProductController extends Controller
             $ItemId=$product->ItemId;
             $productToUpdate = $dataService->Query("SELECT * FROM Item WHERE id='$ItemId'");
 
-           // echo '<pre>';print_r($productToUpdate);exit();
             $theProduct='';
             if(!empty($productToUpdate) && sizeof($productToUpdate) == 1){
                 $theProduct = current($productToUpdate);
             }
 
-            $quickbooksResponse = \QuickBooksOnline\API\Facades\Item::update($theProduct,$data);
-           //echo '<pre>';var_dump($quickbooksResponse);exit();
-           // dd($quickbooksResponse->json());
+            $quickbooksResponse = \QuickBooksOnline\API\Facades\Item::update($theProduct, $data);
             if ($quickbooksResponse) {
-                // Your existing logic to update in the local database with QuickBooks data
+//                $incomeAccountRef = null;
+//                if (isset($quickbooksResponse->IncomeAccountRef)) {
+//                    $incomeAccountRef = [
+//                        'Id' => $quickbooksResponse->IncomeAccountRef->Id,
+//                        'name' => 'Sales of Product Income',
+//                        'value' => '79',
+//                    ];
+//                }
+
                 $product->update([
-                    "id"=>$id,
+                    "id" => $id,
                     'ItemId' => $quickbooksResponse->Id,
                     'Name' => $quickbooksResponse->Name,
                     'Description' => $quickbooksResponse->Description ?? null,
-                    'Active' => $quickbooksResponse->Active,
+                    'Active' => $quickbooksResponse->Active ? 1 : 0,
                     'FullyQualifiedName' => $quickbooksResponse->FullyQualifiedName,
-                    'Taxable' => $quickbooksResponse->Taxable ?? null,
+                    'Taxable' => $quickbooksResponse->Taxable ? 1 : 0,
                     'UnitPrice' => $quickbooksResponse->UnitPrice ?? null,
                     'Type' => $quickbooksResponse->Type ?? null,
-                    'IncomeAccountRef' => isset($quickbooksResponse->IncomeAccountRef) ? json_encode($quickbooksResponse->IncomeAccountRef) : null,
+                    'IncomeAccountRef' =>  null,
                     'PurchaseCost' => $quickbooksResponse->PurchaseCost ?? null,
-                    'TrackQtyOnHand' => $quickbooksResponse->TrackQtyOnHand ?? null,
+                    'TrackQtyOnHand' => $quickbooksResponse->TrackQtyOnHand ? 1 : 0,
                     'SyncToken' => $quickbooksResponse->SyncToken,
                     'updatedby' => $user_id,
                 ]);
@@ -286,6 +279,7 @@ class ProductController extends Controller
                 DB::rollBack();
                 return redirect()->route('products.edit', ['id' => $id])->with('error', 'Something went wrong!');
             }
+
         } catch (QueryException $e) {
             DB::rollBack();
             return redirect()->route('products.edit', ['id' => $id])->with('error', 'Database error: ' . $e->getMessage());
