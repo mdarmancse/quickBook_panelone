@@ -1,11 +1,12 @@
 <?php
 
 use App\Http\Controllers\MarchantController;
-use App\Http\Controllers\PaymentRequestController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/invoices/show/{id}', [InvoiceController::class, 'show'])->name('invoices.show');
 
 Route::get('/', function () {
     return view('welcome');
@@ -69,13 +70,12 @@ Route::put('/marchants/update/{id}', [MarchantController::class, 'update'])->nam
 Route::delete('/marchants/destroy/{id}', [MarchantController::class, 'destroy'])->name('marchants.destroy');
 
 //Route For payemnt Request
-Route::get('/payment-requests', [PaymentRequestController::class, 'index'])->name('payment-requests.index');
-Route::post('/payment-requests', [PaymentRequestController::class, 'store'])->name('payment-requests.store');
-Route::get('/invoices/{id}', [PaymentRequestController::class, 'show'])->name('invoices.show');
+Route::get('/invoice', [InvoiceController::class, 'index'])->name('invoice.index');
+Route::post('/invoice', [InvoiceController::class, 'store'])->name('invoice.store');
 
-Route::get('/invoices', [PaymentRequestController::class, 'invoiceList'])->name('payment-requests.invoice-list');
-Route::get('/invoices/edit/{id}', [PaymentRequestController::class, 'edit'])->name('payment-requests.edit-invoice');
-Route::put('/invoices/update/{id}', [PaymentRequestController::class, 'update'])->name('payment-requests.update');
+Route::get('/invoices', [InvoiceController::class, 'invoiceList'])->name('invoice.invoice-list');
+Route::get('/invoices/edit/{id}', [InvoiceController::class, 'edit'])->name('invoice.edit-invoice');
+Route::put('/invoices/update/{id}', [InvoiceController::class, 'update'])->name('invoice.update');
 
 
 // Customer routes

@@ -1,6 +1,4 @@
-@extends('layouts.master')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 
     <div class="content-header">
         <div class="container-fluid">
@@ -11,7 +9,7 @@
 
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
+                        <li class="breadcrumb-item"><a href="<?php echo e(route('home')); ?>">Home</a></li>
                         <li class="breadcrumb-item active">Invoice List</li>
                     </ol>
                 </div>
@@ -27,18 +25,27 @@
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h3 class="card-title mr-auto">Manage Invoice</h3>
 
-                            <a href="/payment-requests" id="createUrl" class="btn btn-info ">Add Payment Request</a>
+                            <a href="/invoice" id="createUrl" class="btn btn-info ">Create Invoice</a>
                         </div>
-                        @if(session('success'))
+                        <?php if(session('success')): ?>
                             <div class="alert alert-success">
-                                {{ session('success') }}
+                                <?php echo e(session('success')); ?>
+
                             </div>
-                        @endif
+                        <?php endif; ?>
+
+                        <?php if(session('error')): ?>
+                            <div class="alert alert-danger">
+                                <?php echo e(session('error')); ?>
+
+                            </div>
+                        <?php endif; ?>
                         <div class="card-body">
                             <!-- Invoice table goes here -->
                             <table class="table table-bordered table-striped">
                                 <thead>
                                 <tr>
+                                    <th>Invoice Date</th>
                                     <th>Customer</th>
                                     <th>Total Before Discount</th>
                                     <th>Total After Discount</th>
@@ -46,22 +53,19 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @foreach($invoices as $invoice)
+                                <?php $__currentLoopData = $invoices; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $invoice): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <tr>
-                                        <td>{{ $invoice->customer->name }}</td>
-                                        <td>{{ $invoice->total_before_discount }}</td>
-                                        <td>{{ $invoice->total_after_discount }}</td>
+                                        <td><?php echo e($invoice->invoice_date); ?></td>
+                                        <td><?php echo e($invoice->customer->name); ?></td>
+                                        <td><?php echo e($invoice->total_before_discount); ?></td>
+                                        <td><?php echo e($invoice->total_after_discount); ?></td>
                                         <td>
-                                            <a href="{{ route('payment-requests.edit-invoice', $invoice->id) }}" class="btn btn-success"><i class="nav-icon fas fa-edit"></i></a>
-                                            {{-- Uncomment the following lines when you have the delete route and functionality --}}
-                                            {{-- <form action="{{ route('invoices.destroy', $invoice->id) }}" method="POST" style="display:inline;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this invoice?')">Delete</button>
-                                            </form> --}}
+                                            <a href="<?php echo e(route('invoice.edit-invoice', $invoice->id)); ?>" class="btn btn-success"><i class="nav-icon fas fa-edit"></i></a>
+                                            
+                                            
                                         </td>
                                     </tr>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                 </tbody>
                             </table>
                         </div>
@@ -71,4 +75,6 @@
         </div>
     </section>
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\git\quickBook_panelone\resources\views/invoice/invoice-list.blade.php ENDPATH**/ ?>

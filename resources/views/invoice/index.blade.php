@@ -1,4 +1,6 @@
-<?php $__env->startSection('content'); ?>
+@extends('layouts.master')
+
+@section('content')
     <!-- Add Bootstrap styles for better design -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0/css/select2.min.css" />
@@ -28,31 +30,42 @@
     </style>
 
     <section class="content">
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
         <div class="container">
             <div class="row ">
                 <div class="col-lg-12">
                     <div class="card card-info">
                         <div class="card-header text-center">
-                            <h3 class="card-title">Create Payment Request</h3>
+                            <h3 class="card-title">Create Invoice</h3>
                         </div>
 
-                        <form class="card-body" style="margin: 10px" action="<?php echo e(route('invoice.store')); ?>" method="POST">
-                            <?php echo csrf_field(); ?>
+                        <form class="card-body" style="margin: 10px" action="{{ route('invoice.store') }}" method="POST">
+                            @csrf
 
                             <!-- Customer Selection -->
                             <div class="form-group row">
                                 <label for="customer_id" class="col-sm-3 col-form-label">Select Customer</label>
                                 <div class="col-sm-9">
-                                    <?php if(isset($customers) && count($customers) > 0): ?>
+                                    @if(isset($customers) && count($customers) > 0)
                                         <select class="form-control" name="customer_id" id="customer_id" required="">
                                             <option value="">-- Select Customer --</option>
-                                            <?php $__currentLoopData = $customers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $customer): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                <option value="<?php echo e($customer->id); ?>"><?php echo e($customer->name); ?> (<?php echo e($customer->email); ?>)</option>
-                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                            @foreach($customers as $customer)
+                                                <option value="{{ $customer->id }}">{{ $customer->name }} ({{ $customer->email }})</option>
+                                            @endforeach
                                         </select>
-                                    <?php else: ?>
+                                    @else
                                         <p>No customers available. Please add customers first.</p>
-                                    <?php endif; ?>
+                                    @endif
                                 </div>
                             </div>
 
@@ -64,6 +77,36 @@
                                     <div id="product_suggestions"></div>
                                 </div>
                             </div>
+
+                            <div class="form-group row">
+                                <label for="invoice_date" class="col-sm-3 col-form-label">Invoice Date</label>
+                                <div class="col-sm-3">
+                                    <input type="date" class="form-control" id="invoice_date" name="invoice_date" placeholder="" autocomplete="off" value="{{date('Y-m-d')}}">
+                                </div>
+                                <label for="due_date" class="col-sm-3 col-form-label">Due Date</label>
+                                <div class="col-sm-3">
+                                    <input type="date" class="form-control" id="due_date" name="due_date" placeholder="" autocomplete="off"  value="{{date('Y-m-d')}}">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+
+                                <label for="terms" class="col-sm-3 col-form-label">Terms</label>
+                                <div class="col-sm-3">
+                                    <select class="form-control" name="terms" id="terms" >
+                                        <option value="">-- Select Terms --</option>
+                                        <option value="net_15">Net 15</option>
+                                        <option value="net_30">Net 30</option>
+
+                                    </select>
+                                </div>
+                                <label for="billing_address" class="col-sm-3 col-form-label">Billing Address</label>
+                                <div class="col-sm-3">
+                                    <textarea cols="2" class="form-control" id="billing_address" name="billing_address" placeholder="" autocomplete="off"></textarea>
+                                </div>
+
+                            </div>
+
+
 
                             <!-- Products List -->
                             <div class="table-responsive mb-4">
@@ -84,8 +127,8 @@
                             <!-- Discount Field -->
                             <div class="form-group row">
                                 <label for="discount_percentage" class="col-sm-3 col-form-label">Discount Percentage</label>
-                                <div class="col-sm-9">
-                                    <input type="number" class="form-control" id="discount_percentage" name="discount_percentage" placeholder="Enter discount percentage" min="0" max="100" oninput="calculateTotal()">
+                                <div class="col-sm-3">
+                                    <input disabled type="number" class="form-control" id="discount_percentage" name="discount_percentage" placeholder="Enter discount percentage" min="0" max="100" oninput="calculateTotal()">
                                 </div>
                             </div>
 
@@ -131,7 +174,7 @@
 
                             <div class="form-group row mt-3">
                                 <div class="col-sm-12 text-center">
-                                    <button type="submit" class="btn btn-info">Create Payment Request</button>
+                                    <button type="submit" class="btn btn-info">Submit</button>
                                 </div>
                             </div>
                         </form>
@@ -178,7 +221,7 @@
 
                 // Make an AJAX request to fetch product suggestions based on the query
                 $.ajax({
-                    url: '<?php echo e(route("products.autocomplete")); ?>', // Replace with your actual route for product autocomplete
+                    url: '{{ route("products.autocomplete") }}', // Replace with your actual route for product autocomplete
                     method: 'GET',
                     data: { product_name: product_name },
                     dataType: 'json',
@@ -232,6 +275,4 @@
             });
         });
     </script>
-<?php $__env->stopSection(); ?>
-
-<?php echo $__env->make('layouts.master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\git\quickBook_panelone\resources\views/invoice/index.blade.php ENDPATH**/ ?>
+@endsection

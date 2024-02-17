@@ -17,6 +17,7 @@ class Customer extends Model
         'state',
         'zip',
         'country',
+        'realm_id',
         'SyncToken',
 
     ];

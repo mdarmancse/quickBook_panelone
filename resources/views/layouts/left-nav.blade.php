@@ -133,18 +133,18 @@
                         <a href="#" class="nav-link">
                             <i class="nav-icon fas fa-money-check-alt"></i>
                             <p>
-                                Create Payment
+                                Invoices
                                 <i class="fas fa-angle-left right"></i>
                             </p>
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item ml-2">
-                                <a href="{{ route('payment-requests.index') }}" class="nav-link">
-                                    <p>Create Payment Request</p>
+                                <a href="{{ route('invoice.index') }}" class="nav-link">
+                                    <p>Create Invoice</p>
                                 </a>
                             </li>
                             <li class="nav-item ml-2">
-                                <a href="{{ route('payment-requests.invoice-list') }}" class="nav-link">
+                                <a href="{{ route('invoice.invoice-list') }}" class="nav-link">
                                     <p>Manage Invoice</p>
                                 </a>
                             </li>

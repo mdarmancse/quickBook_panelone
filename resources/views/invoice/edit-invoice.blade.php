@@ -1,4 +1,6 @@
-<?php $__env->startSection('content'); ?>
+@extends('layouts.master')
+
+@section('content')
     <!-- Add Bootstrap styles for better design -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0/css/select2.min.css" />
@@ -33,26 +35,31 @@
                 <div class="col-lg-12">
                     <div class="card card-info">
                         <div class="card-header text-center">
-                            <h3 class="card-title">Create Payment Request</h3>
+                            <h3 class="card-title">Edit Invoice</h3>
                         </div>
-
-                        <form class="card-body" style="margin: 10px" action="<?php echo e(route('invoice.store')); ?>" method="POST">
-                            <?php echo csrf_field(); ?>
+                        @if(session('error'))
+                            <div class="alert alert-danger">
+                                {{ session('error') }}
+                            </div>
+                        @endif
+                        <form class="card-body" style="margin: 10px" action="{{ route('invoice.update', $invoice->id) }}" method="POST">
+                            @csrf
+                            @method('PUT')
 
                             <!-- Customer Selection -->
                             <div class="form-group row">
                                 <label for="customer_id" class="col-sm-3 col-form-label">Select Customer</label>
                                 <div class="col-sm-9">
-                                    <?php if(isset($customers) && count($customers) > 0): ?>
-                                        <select class="form-control" name="customer_id" id="customer_id" required="">
+                                    @if(isset($customers) && count($customers) > 0)
+                                        <select class="form-control" id="customer_id" required="" disabled>
                                             <option value="">-- Select Customer --</option>
-                                            <?php $__currentLoopData = $customers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $customer): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                <option value="<?php echo e($customer->id); ?>"><?php echo e($customer->name); ?> (<?php echo e($customer->email); ?>)</option>
-                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                            @foreach($customers as $customer)
+                                                <option value="{{ $customer->id }}" @if($invoice->customer_id == $customer->id) selected @endif>{{ $customer->name }} ({{ $customer->email }})</option>
+                                            @endforeach
                                         </select>
-                                    <?php else: ?>
+                                    @else
                                         <p>No customers available. Please add customers first.</p>
-                                    <?php endif; ?>
+                                    @endif
                                 </div>
                             </div>
 
@@ -61,8 +68,35 @@
                                 <label for="product_name" class="col-sm-3 col-form-label">Select Products</label>
                                 <div class="col-sm-9">
                                     <input type="text" class="form-control" id="product_name" name="product_name" placeholder="Search for products" autocomplete="off">
+                                    <input type="hidden" class="form-control" id="customer_id" name="customer_id" value="{{$invoice->customer_id}}" autocomplete="off">
                                     <div id="product_suggestions"></div>
                                 </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="invoice_date" class="col-sm-3 col-form-label">Invoice Date</label>
+                                <div class="col-sm-3">
+                                    <input type="date" class="form-control" id="invoice_date" name="invoice_date" placeholder="" value="{{$invoice->invoice_date}}" autocomplete="off" disabled>
+                                </div>
+                                <label for="due_date" class="col-sm-3 col-form-label">Due Date</label>
+                                <div class="col-sm-3">
+                                    <input type="date" class="form-control" id="due_date" name="due_date" placeholder="" autocomplete="off" value="{{$invoice->due_date}}">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+
+                                <label for="terms" class="col-sm-3 col-form-label">Terms</label>
+                                <div class="col-sm-3">
+                                    <select class="form-control" name="terms" id="terms" >
+                                        <option value="net_15" {{$invoice->terms == 'net_15' ? 'selected' : ''}}>Net 15</option>
+                                        <option value="net_30" {{$invoice->terms == 'net_30' ? 'selected' : ''}}>Net 30</option>
+                                    </select>
+                                </div>
+
+                                <label for="billing_address" class="col-sm-3 col-form-label">Billing Address</label>
+                                <div class="col-sm-3">
+                                    <textarea cols="2" class="form-control" id="billing_address" name="billing_address" placeholder="" autocomplete="off">{{$invoice->billing_address}}</textarea>
+                                </div>
+
                             </div>
 
                             <!-- Products List -->
@@ -77,7 +111,23 @@
                                         <th>Action</th>
                                     </tr>
                                     </thead>
-                                    <tbody id="products_list"></tbody>
+                                    <tbody id="products_list">
+
+{{--                                   @dd($invoice);--}}
+
+                                    @foreach($invoice->details as $detail)
+                                        <tr class="product-row" data-product-id="{{ $detail->product->id }}">
+                                            <td>{{ $detail->product->Name }}</td>
+                                            <td>{{ $detail->unit_price }}</td>
+                                            <td hidden><input type="hidden" class="form-control product_id" name="items[{{ $detail->product->id }}][product_id]" value="{{ $detail->product_id }}" min="1" required=""></td>
+                                            <td hidden><input type="hidden" class="form-control unit_price" name="items[{{ $detail->product->id }}][unit_price]" value="{{ $detail->unit_price }}" min="1" required=""></td>
+                                            <td><input type="number" class="form-control quantity" name="items[{{ $detail->product->id }}][quantity]" value="{{ $detail->quantity }}" min="1" required="" oninput="calculateTotal()"></td>
+                                            <td><input type="text" class="form-control row-total" name="items[{{ $detail->product->id }}][row_total]" readonly data-unit-price="{{ $detail->unit_price }}" value="{{ $detail->total }}"></td>
+                                            <td><button type="button" class="btn btn-danger btn-sm remove-product"><i class="fas fa-trash"></i></button></td>
+                                        </tr>
+                                    @endforeach
+
+                                    </tbody>
                                 </table>
                             </div>
 
@@ -85,7 +135,7 @@
                             <div class="form-group row">
                                 <label for="discount_percentage" class="col-sm-3 col-form-label">Discount Percentage</label>
                                 <div class="col-sm-9">
-                                    <input type="number" class="form-control" id="discount_percentage" name="discount_percentage" placeholder="Enter discount percentage" min="0" max="100" oninput="calculateTotal()">
+                                    <input disabled type="number" class="form-control" id="discount_percentage" name="discount_percentage" placeholder="Enter discount percentage" min="0" max="100" value="{{ $invoice->discount_percentage }}" oninput="calculateTotal()">
                                 </div>
                             </div>
 
@@ -98,40 +148,19 @@
                                     <div class="row">
                                         <div class="col-sm-6">
                                             <label for="total_before_discount">Total Before Discount:</label>
-                                            <input type="text" class="form-control" id="total_before_discount"  name="total_before_discount" readonly>
+                                            <input type="text" class="form-control" id="total_before_discount"  name="total_before_discount" readonly value="{{ $invoice->total_before_discount }}">
                                         </div>
                                         <div class="col-sm-6">
                                             <label for="total_after_discount">Total After Discount:</label>
-                                            <input type="text" class="form-control" id="total_after_discount" name="total_after_discount" readonly>
+                                            <input type="text" class="form-control" id="total_after_discount" name="total_after_discount" readonly value="{{ $invoice->total_after_discount }}">
                                         </div>
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Commented out Tax Section -->
-                            <!--
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5 class="card-title">Tax</h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <label for="total_before_tax">Total Before Tax:</label>
-                                            <input type="text" class="form-control" id="total_before_tax" readonly>
-                                        </div>
-                                        <div class="col-sm-6">
-                                            <label for="total_after_tax">Total After Tax:</label>
-                                            <input type="text" class="form-control" id="total_after_tax" readonly>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            -->
 
                             <div class="form-group row mt-3">
                                 <div class="col-sm-12 text-center">
-                                    <button type="submit" class="btn btn-info">Create Payment Request</button>
+                                    <button type="submit" class="btn btn-info">Update Invoice</button>
                                 </div>
                             </div>
                         </form>
@@ -178,7 +207,7 @@
 
                 // Make an AJAX request to fetch product suggestions based on the query
                 $.ajax({
-                    url: '<?php echo e(route("products.autocomplete")); ?>', // Replace with your actual route for product autocomplete
+                    url: '{{ route("products.autocomplete") }}', // Replace with your actual route for product autocomplete
                     method: 'GET',
                     data: { product_name: product_name },
                     dataType: 'json',
@@ -225,6 +254,7 @@
                 $('#products_list').append(productRow);
             }
 
+
             // Remove product from the list
             $('#products_list').on('click', '.remove-product', function () {
                 $(this).closest('tr').remove();
@@ -232,6 +262,4 @@
             });
         });
     </script>
-<?php $__env->stopSection(); ?>
-
-<?php echo $__env->make('layouts.master', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\git\quickBook_panelone\resources\views/invoice/index.blade.php ENDPATH**/ ?>
+@endsection
