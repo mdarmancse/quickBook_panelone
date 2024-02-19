@@ -65,12 +65,6 @@ public function store(Request $request)
 
         $invoice_last_id=Invoice::latest()->first()->id;
 
-
-
-
-
-
-
         $lineItems = [];
         foreach ($request->input('items') as $item) {
             $lineItems[] = [
@@ -83,7 +77,17 @@ public function store(Request $request)
                     ],
                     "Qty" => $item['quantity'],
                     "UnitPrice" => $item['unit_price'],
+                ],
+            "DiscountLineDetail" => [
+                "PercentBased" => true,
+                "DiscountPercent" => 15,
+                    "DiscountAccountRef" => [
+                    "value" => 86
+                ],
+                "TaxCodeRef" => [
+                    "value" => 1
                 ]
+            ]
             ];
         }
 
@@ -163,10 +167,6 @@ public function store(Request $request)
 
     return redirect()->route('invoice.index')->with('success', 'Invoice created successfully');
 }
-
-
-
-
 
     public function show($id)
     {

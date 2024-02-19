@@ -14,6 +14,7 @@
 <ul>
     <li>Email: {{ $merchant->email }}</li>
     <li>Password: {{ $password }}</li>
+    <li>Link: <a href={{url()}}> Click Here</a></li>
 </ul>
 
 <p>It is recommended to change your password after your first login.</p>

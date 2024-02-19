@@ -16,7 +16,6 @@ class CustomerController extends Controller
 
     public function index()
     {
-
         $user = Auth::user();
         $user_id = $user->id;
         $setting = $user->setting;
